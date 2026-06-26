@@ -8,8 +8,9 @@ interface StepHeaderProps {
 export function StepHeader({ title, description }: StepHeaderProps) {
   return (
     <div className="step-header">
+      <span className="step-eyebrow">Locker Flow</span>
       <h2 className="step-title">{title}</h2>
-      <p className="step-description">{description}</p>
+      <div className="step-description">{description}</div>
     </div>
   );
 }

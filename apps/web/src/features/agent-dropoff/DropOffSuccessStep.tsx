@@ -1,7 +1,7 @@
-import { PackageRecord } from '../../types';
-import { SuccessPanel } from '../../components/SuccessPanel';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
+import type { PackageRecord } from "../../types";
+import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { SuccessPanel } from "../../components/SuccessPanel";
 
 interface DropOffSuccessStepProps {
   packageRecord: PackageRecord;
@@ -11,40 +11,52 @@ interface DropOffSuccessStepProps {
 }
 
 export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onUpdateDropOffTime }: DropOffSuccessStepProps) {
-  
-  const setDemoTime = (daysAgo: number) => {
+  const setDropOffTimeOffset = (daysAgo: number) => {
     const newTime = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString();
     onUpdateDropOffTime(newTime);
   };
 
   return (
-    <div>
+    <section>
       <SuccessPanel title="Package safely stored!">
-        <p style={{ marginBottom: '1.5rem' }}>
-          Package dropped off successfully!<br/>
+        <p className="success-lead">
+          Package dropped off successfully!
+          <br />
           <strong>Share this pickup code with the customer.</strong>
         </p>
-        
-        <div style={{ backgroundColor: '#fff', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', textAlign: 'left' }}>
-          <p><strong>Agent ID:</strong> {packageRecord.agentId}</p>
-          <p><strong>Package Size:</strong> <span style={{ textTransform: 'capitalize' }}>{packageRecord.packageSize}</span></p>
-          <p><strong>Locker ID:</strong> {packageRecord.lockerId}</p>
-          <p><strong>Drop-off Time:</strong> {new Date(packageRecord.droppedOffAt).toLocaleString()}</p>
-          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-            <p style={{ fontSize: '0.9rem', color: '#6c757d', marginBottom: '0.5rem' }}>PICKUP CODE</p>
-            <div style={{ fontSize: '3rem', fontWeight: 'bold', letterSpacing: '0.2rem', color: '#ffb703' }}>
-              {packageRecord.pickupCode}
-            </div>
+
+        <div className="detail-card">
+          <div className="detail-list">
+            <p>
+              <strong>Agent ID:</strong> {packageRecord.agentId}
+            </p>
+            <p>
+              <strong>Package Size:</strong>{" "}
+              <span className="text-capitalize">{packageRecord.packageSize}</span>
+            </p>
+            <p>
+              <strong>Locker ID:</strong> {packageRecord.lockerId}
+            </p>
+            <p>
+              <strong>Drop-off Time:</strong>{" "}
+              {new Date(packageRecord.droppedOffAt).toLocaleString()}
+            </p>
+          </div>
+
+          <div className="pickup-code-panel">
+            <p className="pickup-code-label">Pickup Code</p>
+            <div className="pickup-code-value">{packageRecord.pickupCode}</div>
           </div>
         </div>
-        
-        <div style={{ backgroundColor: '#fff', padding: '1.5rem', borderRadius: '16px', textAlign: 'left', fontSize: '0.9rem' }}>
-          <h4 style={{ marginBottom: '0.5rem', color: '#e76f51' }}>Storage charges may apply</h4>
-          <p style={{ marginBottom: '1rem', color: '#6c757d' }}>
-            Packages are free to store for the first 24 hours.<br/>
+
+        <div className="notice-card">
+          <h4 className="notice-card-title">Storage charges may apply</h4>
+          <p className="notice-card-copy">
+            Packages are free to store for the first 24 hours.
+            <br />
             After that, storage charges are calculated daily.
           </p>
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
+          <ul className="bulletless-list">
             <li><strong>First 5 days:</strong> RM2/day</li>
             <li><strong>Next 5 days:</strong> RM4/day</li>
             <li><strong>After 10 days:</strong> RM6/day</li>
@@ -52,19 +64,25 @@ export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onU
         </div>
       </SuccessPanel>
 
-      <Card style={{ marginBottom: '2rem', padding: '1.5rem', backgroundColor: '#f8f9fa', border: '1px dashed #dee2e6' }}>
-        <h4 style={{ color: '#6c757d', marginBottom: '1rem', textAlign: 'center' }}>Demo Testing Tools</h4>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <Button variant="outline" onClick={() => setDemoTime(1)}>Set drop-off to 1 day ago</Button>
-          <Button variant="outline" onClick={() => setDemoTime(6)}>Set drop-off to 6 days ago</Button>
-          <Button variant="outline" onClick={() => setDemoTime(11)}>Set drop-off to 11 days ago</Button>
+      <Card className="helper-card">
+        <h4 className="helper-card-title">Drop-Off Time Tools</h4>
+        <div className="action-column">
+          <Button variant="outline" onClick={() => setDropOffTimeOffset(1)}>
+            Set drop-off to 1 day ago
+          </Button>
+          <Button variant="outline" onClick={() => setDropOffTimeOffset(6)}>
+            Set drop-off to 6 days ago
+          </Button>
+          <Button variant="outline" onClick={() => setDropOffTimeOffset(11)}>
+            Set drop-off to 11 days ago
+          </Button>
         </div>
       </Card>
 
-      <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+      <div className="action-column">
         <Button onClick={onDropAnother}>Drop off another package</Button>
         <Button variant="outline" onClick={onGoHome}>Go Home</Button>
       </div>
-    </div>
+    </section>
   );
 }

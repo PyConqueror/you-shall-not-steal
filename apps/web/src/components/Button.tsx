@@ -1,15 +1,29 @@
-import React from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "outline";
   fullWidth?: boolean;
+  children: ReactNode;
 }
 
-export function Button({ variant = 'primary', fullWidth = false, className = '', children, ...props }: ButtonProps) {
-  const baseClass = `btn btn-${variant}`;
-  const widthClass = fullWidth ? 'w-full' : '';
+export function Button({
+  variant = "primary",
+  fullWidth = false,
+  className = "",
+  children,
+  ...props
+}: ButtonProps) {
+  const classNames = [
+    "btn",
+    `btn-${variant}`,
+    fullWidth ? "btn-full-width" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <button className={`${baseClass} ${widthClass} ${className}`} {...props}>
+    <button className={classNames} {...props}>
       {children}
     </button>
   );

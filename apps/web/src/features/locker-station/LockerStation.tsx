@@ -1,7 +1,7 @@
-import { Locker, PackageSize } from '../../types';
-import { getLockerDisplayReason } from '../../utils/lockerRules';
-import { LockerCard } from './LockerCard';
-import { LockerLegend } from './LockerLegend';
+import type { Locker, PackageSize } from "../../types";
+import { getLockerDisplayReason } from "../../utils/lockerRules";
+import { LockerCard } from "./LockerCard";
+import { LockerLegend } from "./LockerLegend";
 
 interface LockerStationProps {
   lockers: Locker[];
@@ -12,6 +12,10 @@ interface LockerStationProps {
 export function LockerStation({ lockers, selectedPackageSize, autoAssignedLockerId }: LockerStationProps) {
   return (
     <div className="locker-station">
+      <div className="locker-station-header">
+        <h3>Locker Station Map</h3>
+        <p>Available lockers are highlighted so the best fit stands out instantly.</p>
+      </div>
       <div className="locker-grid">
         {lockers.map((locker) => {
           const reason = getLockerDisplayReason(locker, selectedPackageSize, autoAssignedLockerId);

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Agent } from '../../types';
-import { mockAgents } from '../../mocks/agents';
-import { Button } from '../../components/Button';
-import { ErrorMessage } from '../../components/ErrorMessage';
-import { StepHeader } from '../../components/StepHeader';
+import { useState, type FormEvent } from "react";
+import type { Agent } from "../../types";
+import { mockAgents } from "../../mocks/agents";
+import { Button } from "../../components/Button";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { StepHeader } from "../../components/StepHeader";
 
 interface AgentIdStepProps {
   onNext: (agent: Agent) => void;
@@ -11,13 +11,13 @@ interface AgentIdStepProps {
 }
 
 export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
-  const [agentId, setAgentId] = useState('');
+  const [agentId, setAgentId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!agentId.trim()) {
-      setError('Please enter an Agent ID.');
+      setError("Please enter an Agent ID.");
       return;
     }
 
@@ -26,15 +26,15 @@ export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
       setError(null);
       onNext(foundAgent);
     } else {
-      setError('Invalid Agent ID. Please check your ID and try again.');
+      setError("Invalid Agent ID. Please check your ID and try again.");
     }
   };
 
   return (
-    <div>
-      <StepHeader 
-        title="Welcome back, agent!" 
-        description="Please enter your Agent ID to continue." 
+    <section>
+      <StepHeader
+        title="Welcome back, agent!"
+        description="Enter your Agent ID to unlock the protected drop-off flow."
       />
       <form onSubmit={handleSubmit}>
         <input
@@ -45,11 +45,15 @@ export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
           onChange={(e) => setAgentId(e.target.value)}
         />
         <ErrorMessage message={error} />
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <Button type="button" variant="outline" onClick={onCancel} fullWidth>Cancel</Button>
-          <Button type="submit" fullWidth>Continue</Button>
+        <div className="action-row">
+          <Button type="button" variant="outline" onClick={onCancel} fullWidth>
+            Cancel
+          </Button>
+          <Button type="submit" fullWidth>
+            Continue
+          </Button>
         </div>
       </form>
-    </div>
+    </section>
   );
 }

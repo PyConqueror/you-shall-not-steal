@@ -1,6 +1,7 @@
 export function LockerLegend() {
   return (
     <div className="locker-legend">
+      <p className="locker-legend-title">Locker Status</p>
       <div className="legend-item">
         <div className="legend-color available"></div>
         <span>Available</span>

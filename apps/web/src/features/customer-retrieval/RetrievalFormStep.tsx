@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { PackageRecord } from '../../types';
-import { Button } from '../../components/Button';
-import { ErrorMessage } from '../../components/ErrorMessage';
-import { StepHeader } from '../../components/StepHeader';
+import { useState, type FormEvent } from "react";
+import type { PackageRecord } from "../../types";
+import { Button } from "../../components/Button";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { StepHeader } from "../../components/StepHeader";
 
 interface RetrievalFormStepProps {
   packages: PackageRecord[];
@@ -11,14 +11,14 @@ interface RetrievalFormStepProps {
 }
 
 export function RetrievalFormStep({ packages, onNext, onCancel }: RetrievalFormStepProps) {
-  const [lockerId, setLockerId] = useState('');
-  const [pickupCode, setPickupCode] = useState('');
+  const [lockerId, setLockerId] = useState("");
+  const [pickupCode, setPickupCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!lockerId.trim() || !pickupCode.trim()) {
-      setError('Please enter both Locker ID and Pickup Code.');
+      setError("Please enter both Locker ID and Pickup Code.");
       return;
     }
 
@@ -33,19 +33,19 @@ export function RetrievalFormStep({ packages, onNext, onCancel }: RetrievalFormS
       setError(null);
       onNext(foundPackage);
     } else {
-      setError('Invalid Locker ID or Pickup Code.');
+      setError("Invalid Locker ID or Pickup Code.");
     }
   };
 
   return (
-    <div>
-      <StepHeader 
-        title="Ready to open your locker?" 
-        description="Enter your Locker ID and Pickup Code." 
+    <section>
+      <StepHeader
+        title="Ready to open your locker?"
+        description="Enter your Locker ID and pickup code to review the retrieval details."
       />
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Locker ID</label>
+        <div className="field-group">
+          <label className="field-label">Locker ID</label>
           <input
             type="text"
             className="input-field"
@@ -54,8 +54,8 @@ export function RetrievalFormStep({ packages, onNext, onCancel }: RetrievalFormS
             onChange={(e) => setLockerId(e.target.value)}
           />
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Pickup Code</label>
+        <div className="field-group">
+          <label className="field-label">Pickup Code</label>
           <input
             type="text"
             className="input-field"
@@ -65,11 +65,15 @@ export function RetrievalFormStep({ packages, onNext, onCancel }: RetrievalFormS
           />
         </div>
         <ErrorMessage message={error} />
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-          <Button type="button" variant="outline" onClick={onCancel} fullWidth>Cancel</Button>
-          <Button type="submit" fullWidth>Continue</Button>
+        <div className="action-row action-row-spaced">
+          <Button type="button" variant="outline" onClick={onCancel} fullWidth>
+            Cancel
+          </Button>
+          <Button type="submit" fullWidth>
+            Continue
+          </Button>
         </div>
       </form>
-    </div>
+    </section>
   );
 }

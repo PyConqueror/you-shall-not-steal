@@ -1,4 +1,4 @@
-import { Locker } from '../../types';
+import type { Locker } from "../../types";
 
 interface LockerCardProps {
   locker: Locker;
@@ -8,7 +8,7 @@ interface LockerCardProps {
 
 export function LockerCard({ locker, reason, onClick }: LockerCardProps) {
   let statusClass: string = locker.status;
-  
+
   if (reason === 'Auto assigned') {
     statusClass = 'auto-assigned';
   } else if (reason === 'Too small') {
@@ -25,10 +25,9 @@ export function LockerCard({ locker, reason, onClick }: LockerCardProps) {
   const isClickable = !!onClick && (reason === 'Available' || reason === 'Auto assigned');
 
   return (
-    <div 
-      className={`locker-card ${statusClass}`}
+    <div
+      className={`locker-card ${statusClass} ${isClickable ? "is-clickable" : ""}`}
       onClick={isClickable ? onClick : undefined}
-      style={{ cursor: isClickable ? 'pointer' : 'default' }}
     >
       {reason === 'Auto assigned' && <div className="locker-badge">Best Fit</div>}
       <div className="locker-icon">{icon}</div>

@@ -1,13 +1,14 @@
-import React from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 
 interface CardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   onClick?: () => void;
   selected?: boolean;
   className?: string;
+  style?: CSSProperties;
 }
 
-export function Card({ children, onClick, selected, className = '' }: CardProps) {
+export function Card({ children, onClick, selected, className = '', style }: CardProps) {
   const clickableClass = onClick ? 'clickable' : '';
   const selectedClass = selected ? 'selected' : '';
   
@@ -15,6 +16,7 @@ export function Card({ children, onClick, selected, className = '' }: CardProps)
     <div 
       className={`card ${clickableClass} ${selectedClass} ${className}`}
       onClick={onClick}
+      style={style}
     >
       {children}
     </div>

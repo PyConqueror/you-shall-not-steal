@@ -1,8 +1,8 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 
 interface StepHeaderProps {
   title: string;
-  description: string;
+  description: ReactNode;
 }
 
 export function StepHeader({ title, description }: StepHeaderProps) {

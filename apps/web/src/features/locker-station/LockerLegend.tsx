@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function LockerLegend() {
   return (
     <div className="locker-legend">
@@ -12,8 +10,8 @@ export function LockerLegend() {
         <span>Occupied</span>
       </div>
       <div className="legend-item">
-        <div className="legend-color selected"></div>
-        <span>Selected</span>
+        <div className="legend-color auto-assigned"></div>
+        <span>Auto Assigned</span>
       </div>
       <div className="legend-item">
         <div className="legend-color disabled"></div>

@@ -267,6 +267,28 @@ input {
   box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.4);
 }
 
+.locker-card.auto-assigned {
+  border-color: var(--primary-hover);
+  background-color: #fffdf5;
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 158, 0, 0.4), 0 0 0 4px rgba(255, 158, 0, 0.6);
+  z-index: 10;
+}
+
+.locker-badge {
+  position: absolute;
+  top: -12px;
+  background-color: var(--primary-hover);
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .locker-card.disabled {
   border-color: #dee2e6;
   background-color: #f8f9fa;
@@ -337,6 +359,7 @@ input {
 .legend-color.available { border-color: var(--success-color); background: #fff; }
 .legend-color.occupied { border-color: var(--error-color); background: #fff5f5; }
 .legend-color.selected { border-color: var(--primary-color); background: #fffdf5; }
+.legend-color.auto-assigned { border-color: var(--primary-hover); background: #fffdf5; }
 .legend-color.disabled { border-color: #dee2e6; background: #f8f9fa; }
 .legend-color.maintenance { border-color: #ffca3a; background: #fff9e6; }
 

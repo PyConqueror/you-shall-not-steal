@@ -27,4 +27,6 @@ export type PackageRecord = {
   status: PackageStatus;
   droppedOffAt: string;
   retrievedAt?: string | null;
+  storageChargeAmount?: number;
+  chargeableDays?: number;
 };

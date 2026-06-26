@@ -1,0 +1,57 @@
+export type StorageChargeBreakdown = {
+  chargeableDays: number;
+  firstTierDays: number;
+  secondTierDays: number;
+  thirdTierDays: number;
+  firstTierAmount: number;
+  secondTierAmount: number;
+  thirdTierAmount: number;
+  totalAmount: number;
+};
+
+export const BASE_DAILY_RATE = 2;
+
+export function calculateChargeableDays(
+  droppedOffAt: string,
+  retrievedAt: string
+): number {
+  const dropOffDate = new Date(droppedOffAt);
+  const retrievalDate = new Date(retrievedAt);
+
+  const diffInMs = retrievalDate.getTime() - dropOffDate.getTime();
+  const diffInHours = diffInMs / (1000 * 60 * 60);
+
+  return Math.max(0, Math.floor(diffInHours / 24));
+}
+
+export function calculateStorageCharge(
+  droppedOffAt: string,
+  retrievedAt: string
+): StorageChargeBreakdown {
+  const chargeableDays = calculateChargeableDays(droppedOffAt, retrievedAt);
+
+  const firstTierDays = Math.min(chargeableDays, 5);
+  const secondTierDays = Math.min(Math.max(chargeableDays - 5, 0), 5);
+  const thirdTierDays = Math.max(chargeableDays - 10, 0);
+
+  const firstTierAmount = firstTierDays * BASE_DAILY_RATE;
+  const secondTierAmount = secondTierDays * BASE_DAILY_RATE * 2;
+  const thirdTierAmount = thirdTierDays * BASE_DAILY_RATE * 3;
+
+  const totalAmount = firstTierAmount + secondTierAmount + thirdTierAmount;
+
+  return {
+    chargeableDays,
+    firstTierDays,
+    secondTierDays,
+    thirdTierDays,
+    firstTierAmount,
+    secondTierAmount,
+    thirdTierAmount,
+    totalAmount,
+  };
+}
+
+export function formatCurrency(amount: number): string {
+  return `RM${amount.toFixed(2)}`;
+}

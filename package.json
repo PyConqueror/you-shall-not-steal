@@ -5,5 +5,14 @@
     "apps/*",
     "packages/*"
   ],
-  "scripts": {}
+  "scripts": {
+    "build": "bunx turbo run build",
+    "dev": "bunx turbo run dev",
+    "lint": "bunx turbo run lint",
+    "typecheck": "bunx turbo run typecheck"
+  },
+  "packageManager": "bun@1.0.0",
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
 }

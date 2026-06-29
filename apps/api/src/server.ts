@@ -2,10 +2,10 @@ import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import * as config from "./config/index.config";
-import { registerErrorHandler } from "./middleware/error-handler.middleware";
-import { registerAllPlugins } from "./plugins/index.plugin";
-import { registerApiRoutes } from "./routes/index.route";
+import * as config from "@/config";
+import { registerErrorHandler } from "@/middleware/error-handler.middleware";
+import { registerAllPlugins } from "@/plugins";
+import { registerApiRoutes } from "@/routes";
 
 export async function buildServer(
   env: config.Env,

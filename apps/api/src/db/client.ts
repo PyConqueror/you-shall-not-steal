@@ -1,5 +1,5 @@
 import { MongoClient, ServerApiVersion, type Db } from "mongodb";
-import type { Env } from "../config/env.config";
+import type { Env } from "@/config";
 import { ensureDatabaseIndexes } from "./collections";
 
 export type MongoConnection = {

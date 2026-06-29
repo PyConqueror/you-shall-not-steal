@@ -1,12 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { getAgentsCollection } from "../db/collections";
-import { AppError } from "../errors/app-error";
+import { getAgentsCollection } from "@/db/collections";
+import { AppError } from "@/errors/app-error";
 import {
   agentLoginRequestSchema,
   type AgentLoginRequest,
-} from "../schemas/auth/request.schema";
-import type { AgentLoginResponse } from "../schemas/auth/response.schema";
-import type { Agent } from "../types/entities";
+  type AgentLoginResponse,
+} from "@/schemas/auth";
+import type { Agent } from "@/types/entities";
 
 function toPublicAgent(agent: Agent & { _id?: unknown }): Agent {
   return {

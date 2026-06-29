@@ -2,7 +2,7 @@ import "@fastify/jwt";
 import "fastify";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { Db, MongoClient } from "mongodb";
-import type { Env } from "../config/env.config";
+import type { Env } from "@/config";
 import type { AgentJwtPayload } from "./auth";
 
 declare module "fastify" {

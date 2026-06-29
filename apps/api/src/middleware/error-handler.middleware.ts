@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodError } from "zod";
-import { AppError } from "../errors/app-error";
+import { AppError } from "@/errors/app-error";
 
 type NormalizedError = {
   code: string;

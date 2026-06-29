@@ -1,5 +1,5 @@
-import type { ResponseModel } from "../types/entities";
-import { RESPONSE_STATUS } from "../types/enum";
+import type { ResponseModel } from "@/types/entities";
+import { RESPONSE_STATUS } from "@/types/enum";
 
 export function createSuccessResponse<TData>(
   data: TData,

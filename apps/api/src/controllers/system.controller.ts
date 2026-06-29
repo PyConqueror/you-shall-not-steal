@@ -1,10 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { pingDatabase } from "../config/db.config";
-import { AppError } from "../errors/app-error";
+import { pingDatabase } from "@/config";
+import { AppError } from "@/errors/app-error";
 import type {
   HealthResponse,
   ReadyResponse,
-} from "../schemas/system/response.schema";
+} from "@/schemas/system";
 
 export async function getHealthController(
   _request: FastifyRequest,

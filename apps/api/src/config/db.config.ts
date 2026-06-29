@@ -1,5 +1,5 @@
-import type { MongoConnection } from "../db/client";
-import { createMongoConnection } from "../db/client";
+import type { MongoConnection } from "@/db/client";
+import { createMongoConnection } from "@/db/client";
 import type { Env } from "./env.config";
 
 let mongoConnection: MongoConnection | null = null;

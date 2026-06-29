@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { getDatabaseConnection } from "../config/db.config";
+import { getDatabaseConnection } from "@/config";
 
 export function registerDecorators(app: FastifyInstance) {
   const mongo = getDatabaseConnection();

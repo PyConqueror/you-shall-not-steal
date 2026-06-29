@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { Env } from "../config/env.config";
+import type { Env } from "@/config";
 import { registerDecorators } from "./decorators.plugin";
 import { registerEnvPlugin } from "./env.plugin";
 import { registerJwtPlugin } from "./jwt.plugin";

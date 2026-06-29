@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { Agent } from "../../types";
-import { mockAgents } from "../../mocks/agents";
+import { mockAgents } from "shared";
 import { Button } from "../../components/Button";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { StepHeader } from "../../components/StepHeader";

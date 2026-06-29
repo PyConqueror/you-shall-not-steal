@@ -4,39 +4,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { createMockPackages, mockLockers } from "shared";
 import type { Agent, Locker, PackageRecord, PackageSize } from "../types";
-import { mockLockers } from "../mocks/lockers";
 import { generatePickupCode } from "../utils/pickupCode";
 import { calculateStorageCharge } from "../utils/storageCharges";
 import { getAgentSession } from "../features/agent-auth/session";
 import { FlowStateContext, type FlowStateContextValue } from "./flowState";
-
-const initialMockPackages: PackageRecord[] = [
-  {
-    packageId: "pkg_existing_001",
-    agentId: "AGT-1001",
-    lockerId: "S-02",
-    packageSize: "small",
-    pickupCode: "111111",
-    status: "stored",
-    droppedOffAt: new Date(
-      Date.now() - 6 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    retrievedAt: null,
-  },
-  {
-    packageId: "pkg_existing_002",
-    agentId: "AGT-1002",
-    lockerId: "M-02",
-    packageSize: "medium",
-    pickupCode: "222222",
-    status: "stored",
-    droppedOffAt: new Date(
-      Date.now() - 11 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-    retrievedAt: null,
-  },
-];
 
 type FlowStateProviderProps = {
   children: ReactNode;
@@ -44,7 +17,9 @@ type FlowStateProviderProps = {
 
 export function FlowStateProvider({ children }: FlowStateProviderProps) {
   const [lockers, setLockers] = useState<Locker[]>(mockLockers);
-  const [packages, setPackages] = useState<PackageRecord[]>(initialMockPackages);
+  const [packages, setPackages] = useState<PackageRecord[]>(() =>
+    createMockPackages(),
+  );
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(
     getAgentSession()?.agent ?? null,
   );

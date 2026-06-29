@@ -1,7 +1,23 @@
+import { useMemo } from "react";
 import type { PackageRecord } from "../../types";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { SuccessPanel } from "../../components/SuccessPanel";
+
+const DROP_OFF_TIME_OFFSETS = [1, 6, 11] as const;
+type DropOffTimeOffset = (typeof DROP_OFF_TIME_OFFSETS)[number];
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function getSelectedDropOffOffset(droppedOffAt: string): DropOffTimeOffset | null {
+  const daysAgo = Math.round(
+    (Date.now() - new Date(droppedOffAt).getTime()) / MS_PER_DAY,
+  );
+
+  return DROP_OFF_TIME_OFFSETS.includes(daysAgo as DropOffTimeOffset)
+    ? (daysAgo as DropOffTimeOffset)
+    : null;
+}
 
 interface DropOffSuccessStepProps {
   packageRecord: PackageRecord;
@@ -11,8 +27,13 @@ interface DropOffSuccessStepProps {
 }
 
 export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onUpdateDropOffTime }: DropOffSuccessStepProps) {
-  const setDropOffTimeOffset = (daysAgo: number) => {
-    const newTime = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString();
+  const selectedOffset = useMemo(
+    () => getSelectedDropOffOffset(packageRecord.droppedOffAt),
+    [packageRecord.droppedOffAt],
+  );
+
+  const setDropOffTimeOffset = (daysAgo: DropOffTimeOffset) => {
+    const newTime = new Date(Date.now() - daysAgo * MS_PER_DAY).toISOString();
     onUpdateDropOffTime(newTime);
   };
 
@@ -67,19 +88,20 @@ export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onU
       <Card className="helper-card">
         <h4 className="helper-card-title">Drop-Off Time Tools</h4>
         <div className="action-column">
-          <Button variant="outline" onClick={() => setDropOffTimeOffset(1)}>
-            Set drop-off to 1 day ago
-          </Button>
-          <Button variant="outline" onClick={() => setDropOffTimeOffset(6)}>
-            Set drop-off to 6 days ago
-          </Button>
-          <Button variant="outline" onClick={() => setDropOffTimeOffset(11)}>
-            Set drop-off to 11 days ago
-          </Button>
+          {DROP_OFF_TIME_OFFSETS.map((daysAgo) => (
+            <Button
+              key={daysAgo}
+              variant="outline"
+              className={selectedOffset === daysAgo ? "is-selected" : ""}
+              onClick={() => setDropOffTimeOffset(daysAgo)}
+            >
+              Set drop-off to {daysAgo} day{daysAgo === 1 ? "" : "s"} ago
+            </Button>
+          ))}
         </div>
       </Card>
 
-      <div className="action-column">
+      <div className="action-column success-actions">
         <Button onClick={onDropAnother}>Drop off another package</Button>
         <Button variant="outline" onClick={onGoHome}>Go Home</Button>
       </div>

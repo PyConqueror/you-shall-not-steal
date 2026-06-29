@@ -539,6 +539,12 @@ button {
   background: #fff8dd;
 }
 
+.btn-outline.is-selected {
+  border-color: var(--secondary-hover);
+  background: linear-gradient(180deg, #fffdf3 0%, #fff6d7 100%);
+  box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.18);
+}
+
 .btn:disabled {
   background: var(--disabled-bg);
   color: var(--disabled-text);
@@ -634,6 +640,10 @@ button {
 }
 
 .action-row-spaced {
+  margin-top: 28px;
+}
+
+.success-actions {
   margin-top: 28px;
 }
 

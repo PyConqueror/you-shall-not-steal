@@ -1,49 +1,55 @@
-import type { ResponseStatus } from "./enum";
+import type { ObjectId } from 'mongodb'
 
-export type PackageSize = "small" | "medium" | "large";
+import type {
+  AgentStatus,
+  LockerStatus,
+  PackageSize,
+  PackageStatus,
+  ResponseStatus,
+} from './enum'
 
-export type LockerStatus = "available" | "occupied" | "maintenance";
+export interface AgentEntity {
+  agentId: string
+  name: string
+  status: AgentStatus
+}
 
-export type PackageStatus = "stored" | "retrieved";
+export interface LockerEntity {
+  id: string
+  lockerId: string
+  size: PackageSize
+  status: LockerStatus
+  currentPackageId?: ObjectId | null
+}
 
-export type AgentStatus = "active" | "inactive";
+export interface PackageEntity {
+  packageId: string
+  agentId: ObjectId
+  lockerId: ObjectId
+  packageSize: PackageSize
+  pickupCode: string
+  status: PackageStatus
+  droppedOffAt: string
+  retrievedAt?: string | null
+  storageChargeAmount?: number
+  chargeableDays?: number
+}
 
-export type Agent = {
-  agentId: string;
-  name: string;
-  status: AgentStatus;
-};
+export type Agent = AgentEntity
 
-export type Locker = {
-  id: string;
-  lockerId: string;
-  size: PackageSize;
-  status: LockerStatus;
-  currentPackageId?: string | null;
-};
+export type Locker = LockerEntity
 
-export type PackageRecord = {
-  packageId: string;
-  agentId: string;
-  lockerId: string;
-  packageSize: PackageSize;
-  pickupCode: string;
-  status: PackageStatus;
-  droppedOffAt: string;
-  retrievedAt?: string | null;
-  storageChargeAmount?: number;
-  chargeableDays?: number;
-};
+export type PackageRecord = PackageEntity
 
 export type ApiError = {
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-};
+  code: string
+  message: string
+  details?: Record<string, unknown>
+}
 
 export type ResponseModel<TData = unknown> = {
-  status: ResponseStatus;
-  statusCode: number;
-  data: TData | null;
-  error?: ApiError;
-};
+  status: ResponseStatus
+  statusCode: number
+  data: TData | null
+  error?: ApiError
+}

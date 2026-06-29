@@ -124,7 +124,10 @@ button {
 }
 
 .brand-pill-icon {
-  font-size: 1.15rem;
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .app-header-badge {

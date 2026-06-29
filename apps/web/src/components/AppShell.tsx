@@ -1,19 +1,34 @@
-import React from 'react';
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 interface AppShellProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="app-container">
+    <div className="app-shell">
       <header className="app-header">
-        <h1 className="app-title">📦 Smart Package Locker</h1>
-        <p className="app-subtitle">A friendly locker station for package drop-off and retrieval.</p>
+        <div className="app-header-top">
+          <Link to="/" className="brand-pill">
+            <img
+              src="/box-logo.svg"
+              alt=""
+              className="brand-pill-icon"
+            />
+            Smart Locker
+          </Link>
+          <span className="app-header-badge">Station Workspace</span>
+        </div>
+
+        <h1 className="app-title">Smart Package Locker</h1>
+        <p className="app-subtitle">
+          A brighter, more polished station interface for agent drop-offs and
+          parcel retrieval.
+        </p>
       </header>
-      <main>
-        {children}
-      </main>
+
+      <main className="app-main">{children}</main>
     </div>
   );
 }

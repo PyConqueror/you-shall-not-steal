@@ -1,5 +1,5 @@
 import { MongoClient, ServerApiVersion, type Db } from "mongodb";
-import type { AppConfig } from "../config/env";
+import type { Env } from "../config/env.config";
 import { ensureDatabaseIndexes } from "./collections";
 
 export type MongoConnection = {
@@ -10,7 +10,7 @@ export type MongoConnection = {
 };
 
 export async function createMongoConnection(
-  config: AppConfig,
+  config: Env,
 ): Promise<MongoConnection> {
   const client = new MongoClient(config.MONGODB_URI, {
     serverApi: ServerApiVersion.v1,

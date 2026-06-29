@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --watch src/server.ts",
     "build": "bunx tsc",
-    "start": "bun dist/index.js",
+    "start": "bun dist/server.js",
     "lint": "bunx eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "typecheck": "bunx tsc --noEmit"
   },

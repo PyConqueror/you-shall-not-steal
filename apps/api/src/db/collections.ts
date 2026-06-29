@@ -1,5 +1,5 @@
 import type { Collection, Db } from "mongodb";
-import type { Agent, Locker, PackageRecord } from "../types/domain";
+import type { Agent, Locker, PackageRecord } from "../types/entities";
 
 export function getAgentsCollection(db: Db): Collection<Agent> {
   return db.collection<Agent>("agents");

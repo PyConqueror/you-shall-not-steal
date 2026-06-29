@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { RetrievalConfirmStep } from "../features/customer-retrieval/RetrievalConfirmStep";
+import { RetrievalConfirmStep } from "../api/customer-retrieval/RetrievalConfirmStep";
 import { useFlowState } from "../state/useFlowState";
 
 export function CustomerRetrievalConfirmPage() {

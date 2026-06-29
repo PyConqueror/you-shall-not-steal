@@ -1,7 +1,6 @@
 import type { Agent } from "../../types";
 
 const AGENT_SESSION_KEY = "smart-locker-agent-session";
-const SESSION_DURATION_MS = 15 * 60 * 1000;
 
 export type AgentSession = {
   token: string;
@@ -13,19 +12,7 @@ function isBrowser() {
   return typeof window !== "undefined";
 }
 
-function buildMockToken(agentId: string, expiresAt: string) {
-  const payload = `${agentId}:${new Date(expiresAt).getTime()}:${crypto.randomUUID()}`;
-  return `mock.${btoa(payload).replace(/=/g, "")}`;
-}
-
-export function createAgentSession(agent: Agent) {
-  const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString();
-  const session: AgentSession = {
-    token: buildMockToken(agent.agentId, expiresAt),
-    expiresAt,
-    agent,
-  };
-
+export function createAgentSession(session: AgentSession) {
   if (isBrowser()) {
     window.sessionStorage.setItem(AGENT_SESSION_KEY, JSON.stringify(session));
   }

@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { AutoLockerAssignmentStep } from "../features/agent-dropoff/AutoLockerAssignmentStep";
+import { AutoLockerAssignmentStep } from "../api/agent-dropoff/AutoLockerAssignmentStep";
 import { useFlowState } from "../state/useFlowState";
 import type { Locker } from "../types";
 

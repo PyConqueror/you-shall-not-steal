@@ -8,7 +8,7 @@ import { createMockPackages, mockLockers } from "shared";
 import type { Agent, Locker, PackageRecord, PackageSize } from "../types";
 import { generatePickupCode } from "../utils/pickupCode";
 import { calculateStorageCharge } from "../utils/storageCharges";
-import { getAgentSession } from "../features/agent-auth/session";
+import { getAgentSession } from "../api/agent-auth/session";
 import { FlowStateContext, type FlowStateContextValue } from "./flowState";
 
 type FlowStateProviderProps = {

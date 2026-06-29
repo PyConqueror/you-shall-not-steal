@@ -1,6 +1,6 @@
 import { MongoClient, ServerApiVersion, type Db } from "mongodb";
 import type { Env } from "@/config";
-import { ensureDatabaseIndexes } from "./collections";
+import { ensureDatabaseIndexes } from "@/models";
 
 export type MongoConnection = {
   client: MongoClient;

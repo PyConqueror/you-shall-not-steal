@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { getAgentsCollection } from "@/db/collections";
+import { getAgentsCollection } from "@/models";
 import { AppError } from "@/errors/app-error";
 import {
   agentLoginRequestSchema,

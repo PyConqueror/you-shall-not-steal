@@ -3,6 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as config from "@/config";
+import { seedDatabaseIfEmpty } from "@/db/seed";
 import { registerErrorHandler } from "@/middleware/error-handler.middleware";
 import { registerAllPlugins } from "@/plugins";
 import { registerApiRoutes } from "@/routes";
@@ -26,6 +27,10 @@ export async function buildServer(
 export async function startServer() {
   const env = await config.loadEnv();
   await config.connectToDatabase(env);
+  if (env.NODE_ENV !== "production") {
+    const { db } = config.getDatabaseConnection();
+    await seedDatabaseIfEmpty(db);
+  }
 
   const app = await buildServer(env);
   let shuttingDown = false;

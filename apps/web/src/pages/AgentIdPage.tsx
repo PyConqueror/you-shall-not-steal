@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { AgentIdStep } from "../features/agent-dropoff/AgentIdStep";
-import { clearAgentSession, createAgentSession } from "../features/agent-auth/session";
+import { AgentIdStep } from "../api/agent-dropoff/AgentIdStep";
+import { loginAgent } from "../api/agent-auth/api";
+import { clearAgentSession, createAgentSession } from "../api/agent-auth/session";
 import { useFlowState } from "../state/useFlowState";
-import type { Agent } from "../types";
 
 export function AgentIdPage() {
   const navigate = useNavigate();
   const { beginAgentFlow, resetFlowProgress } = useFlowState();
 
-  const handleNext = (agent: Agent) => {
-    createAgentSession(agent);
-    beginAgentFlow(agent);
+  const handleNext = async (agentId: string) => {
+    const session = await loginAgent(agentId);
+    createAgentSession(session);
+    beginAgentFlow(session.agent);
     navigate("/agent/size");
   };
 

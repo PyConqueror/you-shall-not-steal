@@ -6,15 +6,8 @@ import {
   type AgentLoginRequest,
   type AgentLoginResponse,
 } from "@/schemas/auth";
-import type { Agent } from "@/types/entities";
+import { toPublicAgent } from "@/utils/auth.util";
 
-function toPublicAgent(agent: Agent & { _id?: unknown }): Agent {
-  return {
-    agentId: agent.agentId,
-    name: agent.name,
-    status: agent.status,
-  };
-}
 
 export async function loginAgentController(
   request: FastifyRequest,

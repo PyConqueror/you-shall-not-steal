@@ -1,6 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { DropOffSuccessStep } from "../features/agent-dropoff/DropOffSuccessStep";
-import { clearAgentSession } from "../features/agent-auth/session";
+import { DropOffSuccessStep } from "../api/agent-dropoff/DropOffSuccessStep";
+import { clearAgentSession } from "../api/agent-auth/session";
 import { useFlowState } from "../state/useFlowState";
 
 export function AgentSuccessPage() {

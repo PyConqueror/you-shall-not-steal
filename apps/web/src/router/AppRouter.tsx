@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
-import { ProtectedAgentRoute } from "../features/agent-auth/ProtectedAgentRoute";
+import { ProtectedAgentRoute } from "../api/agent-auth/ProtectedAgentRoute";
 import { AgentIdPage } from "../pages/AgentIdPage";
 import { AgentLockerAssignmentPage } from "../pages/AgentLockerAssignmentPage";
 import { AgentPackageSizePage } from "../pages/AgentPackageSizePage";

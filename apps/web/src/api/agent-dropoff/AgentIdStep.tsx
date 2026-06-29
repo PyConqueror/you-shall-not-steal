@@ -1,32 +1,40 @@
 import { useState, type FormEvent } from "react";
-import type { Agent } from "../../types";
-import { mockAgents } from "shared";
 import { Button } from "../../components/Button";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { StepHeader } from "../../components/StepHeader";
 
 interface AgentIdStepProps {
-  onNext: (agent: Agent) => void;
+  onNext: (agentId: string) => Promise<void>;
   onCancel: () => void;
 }
 
 export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
   const [agentId, setAgentId] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!agentId.trim()) {
+    const normalizedAgentId = agentId.trim();
+
+    if (!normalizedAgentId) {
       setError("Please enter an Agent ID.");
       return;
     }
 
-    const foundAgent = mockAgents.find((a) => a.agentId === agentId.trim());
-    if (foundAgent) {
+    setIsSubmitting(true);
+
+    try {
+      await onNext(normalizedAgentId);
       setError(null);
-      onNext(foundAgent);
-    } else {
-      setError("Invalid Agent ID. Please check your ID and try again.");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to log in right now. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -42,15 +50,27 @@ export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
           className="input-field"
           placeholder="e.g. AGT-1001"
           value={agentId}
-          onChange={(e) => setAgentId(e.target.value)}
+          onChange={(e) => {
+            setAgentId(e.target.value);
+            if (error) {
+              setError(null);
+            }
+          }}
+          disabled={isSubmitting}
         />
         <ErrorMessage message={error} />
         <div className="action-row">
-          <Button type="button" variant="outline" onClick={onCancel} fullWidth>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            fullWidth
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type="submit" fullWidth>
-            Continue
+          <Button type="submit" fullWidth disabled={isSubmitting}>
+            {isSubmitting ? "Signing in..." : "Continue"}
           </Button>
         </div>
       </form>

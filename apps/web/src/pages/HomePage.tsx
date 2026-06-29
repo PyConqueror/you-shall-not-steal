@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
-import { clearAgentSession } from "../features/agent-auth/session";
+import { clearAgentSession } from "../api/agent-auth/session";
 import { useFlowState } from "../state/useFlowState";
 
 export function HomePage() {

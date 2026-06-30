@@ -2,7 +2,6 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { getAgentsCollection } from "@/models";
 import { AppError } from "@/errors/app-error";
 import {
-  agentLoginRequestSchema,
   type AgentLoginRequest,
   type AgentLoginResponse,
 } from "@/schemas/auth";
@@ -10,11 +9,10 @@ import { toPublicAgent } from "@/utils/auth.util";
 
 
 export async function loginAgentController(
-  request: FastifyRequest,
+  request: FastifyRequest<{ Body: AgentLoginRequest }>,
   reply: FastifyReply,
 ) {
-  const body: AgentLoginRequest = agentLoginRequestSchema.parse(request.body);
-  const normalizedAgentId = body.agentId.trim();
+  const normalizedAgentId = request.body.agentId.trim();
 
   const agent = await getAgentsCollection(request.server.mongo.db).findOne({
     agentId: normalizedAgentId,

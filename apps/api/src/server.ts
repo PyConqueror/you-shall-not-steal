@@ -1,5 +1,10 @@
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import {
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-type-provider-zod";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as config from "@/config";
@@ -15,7 +20,10 @@ export async function buildServer(
     logger: {
       level: env.LOG_LEVEL,
     },
-  });
+  }).withTypeProvider<ZodTypeProvider>();
+
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
 
   await registerAllPlugins(app, env);
   registerErrorHandler(app);

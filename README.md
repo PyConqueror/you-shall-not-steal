@@ -1,4 +1,7 @@
-# Smart Package Locker
+
+<p align="center">
+  <img src="./packages/banner.png" alt="Smart Package Locker" width="100%" />
+</p>
 
 A package locker management system where delivery agents drop off packages into available lockers and customers retrieve them using a pickup code.
 

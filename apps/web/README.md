@@ -3,10 +3,12 @@
 React + TypeScript frontend for the Smart Package Locker system.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router" />
+  <a href="https://skillicons.dev">
+    <img
+      src="https://skillicons.dev/icons?i=react,vite,ts,css&theme=light&perline=4"
+      alt="Web app tech stack"
+    />
+  </a>
 </p>
 
 ## Features

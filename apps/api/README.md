@@ -3,11 +3,12 @@
 Fastify + Bun backend for the Smart Package Locker system.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Fastify-000000?style=for-the-badge&logo=fastify&logoColor=white" alt="Fastify" />
-  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
-  <img src="https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white" alt="Zod" />
-  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" />
-  <img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun" />
+  <a href="https://skillicons.dev">
+    <img
+      src="https://skillicons.dev/icons?i=bun,ts,mongodb,nodejs&theme=light&perline=4"
+      alt="API tech stack"
+    />
+  </a>
 </p>
 
 ## Features

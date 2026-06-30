@@ -3,8 +3,12 @@
 Cross-workspace mock data used by the API seed script and the web app's local flow state.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Bun_Workspaces-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun Workspaces" />
+  <a href="https://skillicons.dev">
+    <img
+      src="https://skillicons.dev/icons?i=bun,ts&theme=light&perline=2"
+      alt="Shared package tech stack"
+    />
+  </a>
 </p>
 
 ## Purpose

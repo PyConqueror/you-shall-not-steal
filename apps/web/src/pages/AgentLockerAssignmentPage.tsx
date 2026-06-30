@@ -105,7 +105,7 @@ export function AgentLockerAssignmentPage() {
         session.token,
       );
 
-      recordAgentDropOff(response.package, response.locker);
+      recordAgentDropOff(response.package);
       navigate("/agent/success");
     } catch (error) {
       if (

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { ObjectId, type WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { AppError } from "@/errors/app-error";
 import {
   getAgentsCollection,
@@ -13,7 +13,7 @@ import type {
   ConfirmAgentDropoffRequest,
   ConfirmAgentDropoffResponse,
 } from "@/schemas/agent-dropoff";
-import type { PackageEntity } from "@/types/entities";
+import type { PackageDocument } from "@/types/documents";
 import { LOCKER_STATUS, PACKAGE_STATUS } from "@/types/enum";
 import {
   toPublicLocker,
@@ -21,8 +21,6 @@ import {
 } from "@/utils/agent-dropoff.util";
 import { canPackageFitLocker, getSmallestAvailableLocker } from "@/utils/locker.util";
 import { generateUniquePickupCode } from "@/utils/pickup-code.util";
-
-type PackageDocument = WithId<PackageEntity>;
 
 export async function getLockersAvailability(
   request: FastifyRequest<{ Querystring: AgentDropoffLockersQuery }>,

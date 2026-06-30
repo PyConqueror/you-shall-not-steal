@@ -1,6 +1,6 @@
 # Shared Package
 
-Cross-workspace mock data used by the API seed script and the web app's local flow state.
+Cross-workspace mock data used by the API seed script and as the source of truth for demo credentials across the monorepo.
 
 <p align="center">
   <a href="https://skillicons.dev">
@@ -13,7 +13,7 @@ Cross-workspace mock data used by the API seed script and the web app's local fl
 
 ## Purpose
 
-This package provides a single source of truth for demo/seed data so the API database and web UI start with consistent agents, lockers, and packages. It is not a types package — entity types live in each app's own `types/` directory.
+This package provides a single source of truth for demo/seed data so the API database and the documented web retrieval credentials stay consistent. It is not a types package — entity types live in each app's own `types/` directory.
 
 ## Package configuration
 
@@ -28,7 +28,7 @@ This package provides a single source of truth for demo/seed data so the API dat
 ```
 
 - No build step — consumed as raw TypeScript via Bun workspace resolution
-- Imported as `import { mockAgents } from 'shared'` in both `apps/api` and `apps/web`
+- Imported as `import { mockAgents } from 'shared'` in `apps/api`; the web app consumes the same seeded records through the API
 - Type-checking is covered by the consuming apps' `typecheck` scripts
 
 ## Exports
@@ -84,7 +84,7 @@ Returns 2 stored packages. Accepts an optional `referenceDate` (defaults to `Dat
 | Package ID | Agent | Locker | Size | Pickup code | Dropped off |
 | --- | --- | --- | --- | --- | --- |
 | `pkg_existing_001` | `AGT-1001` | `S-02` | small | `111111` | 6 days ago |
-| `pkg_existing_002` | `AGT-1002` | `M-01` | medium | `222222` | 2 days ago |
+| `pkg_existing_002` | `AGT-1002` | `M-02` | medium | `222222` | 11 days ago |
 
 ## Usage
 
@@ -101,15 +101,12 @@ Runs automatically in `startServer()` when `NODE_ENV !== "production"`.
 
 ### Web (`apps/web`)
 
-`FlowStateProvider` in `apps/web/src/state/FlowStateContext.tsx`:
+The web app no longer looks up customer retrieval packages from local mock state. Instead, it calls the API endpoints backed by the seeded MongoDB data:
 
-```typescript
-const [lockers, setLockers] = useState<Locker[]>(mockLockers);
-const [packages, setPackages] = useState<PackageRecord[]>(() => createMockPackages());
-```
+- `POST /customer/retrieval/lookup`
+- `POST /customer/retrieval/confirm`
 
-- Customer retrieval looks up packages by `lockerId` + `pickupCode` from this state.
-- Agent drop-off updates local state after successful API calls for UI consistency.
+Use the credentials above (`S-02 / 111111` or `M-02 / 222222`) after the API seed runs.
 
 ## File structure
 

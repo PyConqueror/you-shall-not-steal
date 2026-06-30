@@ -19,6 +19,7 @@ Fastify + Bun backend for the Smart Package Locker system.
 - MongoDB connection lifecycle with health/readiness checks
 - JWT-based agent authentication (`@fastify/jwt`)
 - Agent drop-off: locker availability, recommendation, and package creation
+- Customer retrieval: locker/pickup validation, charge preview, confirmation, and locker release
 - Automatic mock data seeding in non-production when the database is empty
 - Structured error handling with consistent API error responses
 - Security headers via `@fastify/helmet` and CORS via `@fastify/cors`
@@ -314,8 +315,106 @@ All drop-off routes require `Authorization: Bearer <token>`.
 - Recommendation picks the smallest available compatible locker, breaking ties by `lockerId`.
 - Drop-off uses `findOneAndUpdate` with `status: available` for atomic reservation; package insert failure rolls back the locker.
 
+### Customer retrieval
+
+Customer retrieval routes are public and do not require JWT auth.
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/customer/retrieval/lookup` | Validate locker credentials and return package details with a charge preview |
+| `POST` | `/customer/retrieval/confirm` | Mark the package as retrieved and free the locker |
+
+**`POST /customer/retrieval/lookup` request:**
+
+```json
+{
+  "lockerId": "S-02",
+  "pickupCode": "111111"
+}
+```
+
+**`POST /customer/retrieval/lookup` response (`200`):**
+
+```json
+{
+  "package": {
+    "packageId": "pkg_existing_001",
+    "agentId": "AGT-1001",
+    "lockerId": "S-02",
+    "packageSize": "small",
+    "pickupCode": "111111",
+    "status": "stored",
+    "droppedOffAt": "2026-01-01T00:00:00.000Z"
+  },
+  "locker": {
+    "id": "locker_002",
+    "lockerId": "S-02",
+    "size": "small",
+    "status": "occupied",
+    "currentPackageId": "..."
+  },
+  "chargePreview": {
+    "retrievedAt": "2026-01-07T00:00:00.000Z",
+    "chargeableDays": 6,
+    "firstTierDays": 5,
+    "secondTierDays": 1,
+    "thirdTierDays": 0,
+    "firstTierAmount": 10,
+    "secondTierAmount": 4,
+    "thirdTierAmount": 0,
+    "totalAmount": 14
+  }
+}
+```
+
+**`POST /customer/retrieval/confirm` request:**
+
+```json
+{
+  "lockerId": "S-02",
+  "pickupCode": "111111"
+}
+```
+
+**`POST /customer/retrieval/confirm` response (`200`):**
+
+```json
+{
+  "package": {
+    "packageId": "pkg_existing_001",
+    "agentId": "AGT-1001",
+    "lockerId": "S-02",
+    "packageSize": "small",
+    "pickupCode": "111111",
+    "status": "retrieved",
+    "droppedOffAt": "2026-01-01T00:00:00.000Z",
+    "retrievedAt": "2026-01-07T00:00:00.000Z",
+    "storageChargeAmount": 14,
+    "chargeableDays": 6
+  },
+  "locker": {
+    "id": "locker_002",
+    "lockerId": "S-02",
+    "size": "small",
+    "status": "available",
+    "currentPackageId": null
+  }
+}
+```
+
+**Customer retrieval error codes:**
+
+| Code | Status | When |
+| --- | --- | --- |
+| `INVALID_LOCKER_OR_PICKUP_CODE` | 404 | Locker or pickup code does not resolve to an active stored package |
+| `PACKAGE_ALREADY_RETRIEVED` | 409 | The package was already retrieved before confirmation completed |
+| `LOCKER_STATE_MISMATCH` | 409 | The locker no longer points to the package being retrieved |
+
+Retrieval confirmation recomputes charges on the server using the current confirmation time, updates the package to `retrieved`, and releases the locker with a compensating package rollback if the locker update fails.
+
 ## Seed data
 
 In non-production environments, `startServer()` calls `seedDatabaseIfEmpty()` when agents, lockers, and packages collections are all empty. Data comes from the `shared` workspace package with resolved MongoDB `ObjectId` references.
 
 Use agent IDs `AGT-1001`, `AGT-1002`, or `AGT-1003` to log in after a fresh seed.
+Use customer retrieval credentials `S-02 / 111111` or `M-02 / 222222` after a fresh seed.

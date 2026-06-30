@@ -1,13 +1,7 @@
-import { MongoClient, ServerApiVersion, type Db } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 import type { Env } from "@/config";
 import { ensureDatabaseIndexes } from "@/models";
-
-export type MongoConnection = {
-  client: MongoClient;
-  db: Db;
-  ping: () => Promise<void>;
-  close: () => Promise<void>;
-};
+import type { MongoConnection } from "@/types/db";
 
 export async function createMongoConnection(
   config: Env,

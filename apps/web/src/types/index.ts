@@ -4,6 +4,18 @@ export type LockerStatus = "available" | "occupied" | "maintenance";
 
 export type PackageStatus = "stored" | "retrieved";
 
+export type StorageChargePreview = {
+  retrievedAt: string;
+  chargeableDays: number;
+  firstTierDays: number;
+  secondTierDays: number;
+  thirdTierDays: number;
+  firstTierAmount: number;
+  secondTierAmount: number;
+  thirdTierAmount: number;
+  totalAmount: number;
+};
+
 export type Agent = {
   agentId: string;
   name: string;

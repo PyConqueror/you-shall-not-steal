@@ -11,11 +11,7 @@ export function AppShell({ children }: AppShellProps) {
       <header className="app-header">
         <div className="app-header-top">
           <Link to="/" className="brand-pill">
-            <img
-              src="/box-logo.svg"
-              alt=""
-              className="brand-pill-icon"
-            />
+          📦
             Smart Locker
           </Link>
           <span className="app-header-badge">Station Workspace</span>

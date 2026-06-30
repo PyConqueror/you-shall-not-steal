@@ -4,9 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/server.ts",
+    "dev": "bun --watch src/cli.ts",
     "build": "bunx tsc && bunx tsc-alias -p tsconfig.json",
-    "start": "bun dist/server.js",
+    "build:vercel": "bun build src/index.ts --outfile api/index.js --target node --packages=bundle",
+    "start": "bun dist/cli.js",
     "lint": "bunx eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "typecheck": "bunx tsc --noEmit"
   },

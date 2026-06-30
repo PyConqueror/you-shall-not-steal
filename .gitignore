@@ -1,5 +1,6 @@
 node_modules/
 dist/
+apps/api/api/index.js
 .env
 .env.*
 !.env.example

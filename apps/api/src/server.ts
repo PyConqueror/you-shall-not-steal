@@ -5,8 +5,6 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as config from "@/config";
 import { seedDatabaseIfEmpty } from "@/db/seed";
 import { registerErrorHandler } from "@/middleware/error-handler.middleware";
@@ -32,15 +30,22 @@ export async function buildServer(
   return app;
 }
 
-export async function startServer() {
+export async function bootstrapServer(): Promise<FastifyInstance> {
   const env = await config.loadEnv();
   await config.connectToDatabase(env);
+
   if (env.NODE_ENV !== "production") {
     const { db } = config.getDatabaseConnection();
     await seedDatabaseIfEmpty(db);
   }
 
   const app = await buildServer(env);
+  await app.ready();
+  return app;
+}
+
+export async function startServer() {
+  const app = await bootstrapServer();
   let shuttingDown = false;
 
   const shutdown = async (signal: NodeJS.Signals) => {
@@ -69,6 +74,8 @@ export async function startServer() {
     void shutdown("SIGTERM");
   });
 
+  const env = app.config;
+
   try {
     await app.listen({
       host: env.HOST,
@@ -79,16 +86,4 @@ export async function startServer() {
     await config.disconnectFromDatabase().catch(() => undefined);
     process.exit(1);
   }
-}
-
-const currentFilePath = fileURLToPath(import.meta.url);
-const isDirectExecution =
-  typeof process.argv[1] === "string" &&
-  resolve(process.argv[1]) === currentFilePath;
-
-if (isDirectExecution) {
-  startServer().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
 }

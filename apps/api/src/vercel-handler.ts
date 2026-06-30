@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { FastifyInstance } from "fastify";
-import { bootstrapServer } from "@/server";
+import { bootstrapServer } from "@/fastify-app";
 
 let appPromise: Promise<FastifyInstance> | null = null;
 

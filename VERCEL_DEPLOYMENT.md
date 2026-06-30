@@ -65,6 +65,17 @@ Create two separate Vercel projects from the same GitHub repository:
 Vercel should auto-detect the framework for each app from the selected root
 directory.
 
+## Fastify API entrypoint on Vercel
+
+For the API project (`apps/api` root), Vercel detects Fastify from
+`src/server.ts` and serves it as a single Vercel Function.
+
+- Keep the entrypoint at one of Vercel's recognized names (`app`, `index`, or
+  `server`) under project root or `src/`.
+- This repo uses `apps/api/src/server.ts`.
+- Do not add a manual `/api` serverless wrapper or rewrites unless you are
+  intentionally moving away from Vercel's Fastify auto-detection model.
+
 ## Web project settings
 
 Required environment variables:
@@ -89,8 +100,6 @@ Notes:
 Required environment variables:
 
 - `NODE_ENV`
-- `HOST`
-- `PORT`
 - `LOG_LEVEL`
 - `CORS_ORIGIN`
 - `MONGODB_URI`
@@ -115,6 +124,10 @@ Notes:
 - `apps/api/src/server.ts` only seeds the database when `NODE_ENV` is not
   `production`, so Vercel deployments should use real data or a pre-seeded
   database.
+- `HOST` and `PORT` are local bind defaults (`0.0.0.0` and `3001`) and are not
+  required to be set in Vercel.
+- Use `vercel dev` from `apps/api` (or with `--cwd apps/api`) for local behavior
+  that matches the deployed Vercel runtime.
 
 ## Git and monorepo settings
 

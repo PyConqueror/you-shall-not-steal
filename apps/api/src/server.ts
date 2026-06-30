@@ -13,6 +13,11 @@ import { registerErrorHandler } from "@/middleware/error-handler.middleware";
 import { registerAllPlugins } from "@/plugins";
 import { registerApiRoutes } from "@/routes";
 
+type StartServerOptions = {
+  enableGracefulShutdown?: boolean;
+  exitOnError?: boolean;
+};
+
 export async function buildServer(
   env: config.Env,
 ): Promise<FastifyInstance> {
@@ -32,15 +37,7 @@ export async function buildServer(
   return app;
 }
 
-export async function startServer() {
-  const env = await config.loadEnv();
-  await config.connectToDatabase(env);
-  if (env.NODE_ENV !== "production") {
-    const { db } = config.getDatabaseConnection();
-    await seedDatabaseIfEmpty(db);
-  }
-
-  const app = await buildServer(env);
+function registerGracefulShutdown(app: FastifyInstance) {
   let shuttingDown = false;
 
   const shutdown = async (signal: NodeJS.Signals) => {
@@ -68,6 +65,23 @@ export async function startServer() {
   process.once("SIGTERM", () => {
     void shutdown("SIGTERM");
   });
+}
+
+export async function startServer(
+  options: StartServerOptions = {},
+): Promise<FastifyInstance> {
+  const { enableGracefulShutdown = true, exitOnError = true } = options;
+  const env = await config.loadEnv();
+  await config.connectToDatabase(env);
+  if (env.NODE_ENV !== "production") {
+    const { db } = config.getDatabaseConnection();
+    await seedDatabaseIfEmpty(db);
+  }
+
+  const app = await buildServer(env);
+  if (enableGracefulShutdown) {
+    registerGracefulShutdown(app);
+  }
 
   try {
     await app.listen({
@@ -77,18 +91,31 @@ export async function startServer() {
   } catch (error) {
     app.log.error(error);
     await config.disconnectFromDatabase().catch(() => undefined);
-    process.exit(1);
+    if (exitOnError) {
+      process.exit(1);
+    }
+    throw error;
   }
+
+  return app;
 }
 
 const currentFilePath = fileURLToPath(import.meta.url);
 const isDirectExecution =
   typeof process.argv[1] === "string" &&
   resolve(process.argv[1]) === currentFilePath;
+const isVercelRuntime =
+  process.env.VERCEL === "1" || typeof process.env.VERCEL_ENV === "string";
+const shouldAutoStart = isDirectExecution || isVercelRuntime;
 
-if (isDirectExecution) {
-  startServer().catch((error) => {
+if (shouldAutoStart) {
+  void startServer({
+    enableGracefulShutdown: isDirectExecution,
+    exitOnError: isDirectExecution,
+  }).catch((error) => {
     console.error(error);
-    process.exit(1);
+    if (isDirectExecution) {
+      process.exit(1);
+    }
   });
 }

@@ -1,13 +1,12 @@
-import type { WithId } from "mongodb";
 import type {
   PublicLockerResponse,
   StoredPackageRecordResponse,
 } from "@/schemas/agent-dropoff";
-import type { AgentEntity, LockerEntity, PackageEntity } from "@/types/entities";
-
-type AgentDocument = WithId<AgentEntity>;
-type LockerDocument = WithId<LockerEntity>;
-type PackageDocument = WithId<PackageEntity>;
+import type {
+  AgentDocument,
+  LockerDocument,
+  PackageDocument,
+} from "@/types/documents";
 
 export function toPublicLocker(locker: LockerDocument): PublicLockerResponse {
   return {

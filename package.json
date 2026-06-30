@@ -11,7 +11,7 @@
     "lint": "bunx turbo run lint",
     "typecheck": "bunx turbo run typecheck"
   },
-  "packageManager": "bun@1.0.0",
+  "packageManager": "bun@1.3.14",
   "devDependencies": {
     "turbo": "^2.5.0"
   }

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { PackageRecord } from "../../types";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
+import { ErrorMessage } from "../../components/ErrorMessage";
 import { SuccessPanel } from "../../components/SuccessPanel";
 
 const DROP_OFF_TIME_OFFSETS = [1, 6, 11] as const;
@@ -23,10 +24,19 @@ interface DropOffSuccessStepProps {
   packageRecord: PackageRecord;
   onDropAnother: () => void;
   onGoHome: () => void;
-  onUpdateDropOffTime: (newTime: string) => void;
+  onUpdateDropOffTime: (newTime: string) => void | Promise<void>;
+  isUpdatingDropOffTime: boolean;
+  updateErrorMessage: string | null;
 }
 
-export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onUpdateDropOffTime }: DropOffSuccessStepProps) {
+export function DropOffSuccessStep({
+  packageRecord,
+  onDropAnother,
+  onGoHome,
+  onUpdateDropOffTime,
+  isUpdatingDropOffTime,
+  updateErrorMessage,
+}: DropOffSuccessStepProps) {
   const selectedOffset = useMemo(
     () => getSelectedDropOffOffset(packageRecord.droppedOffAt),
     [packageRecord.droppedOffAt],
@@ -34,7 +44,7 @@ export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onU
 
   const setDropOffTimeOffset = (daysAgo: DropOffTimeOffset) => {
     const newTime = new Date(Date.now() - daysAgo * MS_PER_DAY).toISOString();
-    onUpdateDropOffTime(newTime);
+    void onUpdateDropOffTime(newTime);
   };
 
   return (
@@ -92,6 +102,7 @@ export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onU
             <Button
               key={daysAgo}
               variant="outline"
+              disabled={isUpdatingDropOffTime}
               className={selectedOffset === daysAgo ? "is-selected" : ""}
               onClick={() => setDropOffTimeOffset(daysAgo)}
             >
@@ -99,6 +110,7 @@ export function DropOffSuccessStep({ packageRecord, onDropAnother, onGoHome, onU
             </Button>
           ))}
         </div>
+        <ErrorMessage message={updateErrorMessage} />
       </Card>
 
       <div className="action-column success-actions">

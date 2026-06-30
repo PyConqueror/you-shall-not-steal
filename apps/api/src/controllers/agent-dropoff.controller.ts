@@ -12,6 +12,8 @@ import type {
   AgentDropoffLockersResponse,
   ConfirmAgentDropoffRequest,
   ConfirmAgentDropoffResponse,
+  UpdateAgentDropoffTimeRequest,
+  UpdateAgentDropoffTimeResponse,
 } from "@/schemas/agent-dropoff";
 import type { PackageDocument } from "@/types/documents";
 import { LOCKER_STATUS, PACKAGE_STATUS } from "@/types/enum";
@@ -160,4 +162,81 @@ export async function dropOffPackage(
   };
 
   return reply.status(201).send(response);
+}
+
+export async function updateAgentDropoffTime(
+  request: FastifyRequest<{ Body: UpdateAgentDropoffTimeRequest }>,
+  reply: FastifyReply,
+) {
+  const db = request.server.mongo.db;
+  const agentsCollection = getAgentsCollection(db);
+  const lockersCollection = getLockersCollection(db);
+  const packagesCollection = getPackagesCollection(db);
+
+  const agent = await agentsCollection.findOne({
+    agentId: request.user.sub,
+  });
+
+  if (!agent) {
+    throw new AppError({
+      code: "AUTHENTICATED_AGENT_NOT_FOUND",
+      message: "Authenticated agent could not be resolved.",
+      statusCode: 401,
+    });
+  }
+
+  const updatedPackage = await packagesCollection.findOneAndUpdate(
+    {
+      packageId: request.body.packageId,
+      agentId: agent._id,
+      status: PACKAGE_STATUS.STORED,
+    },
+    {
+      $set: {
+        droppedOffAt: request.body.droppedOffAt,
+      },
+    },
+    {
+      returnDocument: "after",
+    },
+  );
+
+  if (!updatedPackage) {
+    const existingPackage = await packagesCollection.findOne({
+      packageId: request.body.packageId,
+      agentId: agent._id,
+    });
+
+    if (existingPackage?.status === PACKAGE_STATUS.RETRIEVED) {
+      throw new AppError({
+        code: "PACKAGE_ALREADY_RETRIEVED",
+        message: "Package was already retrieved.",
+        statusCode: 409,
+      });
+    }
+
+    throw new AppError({
+      code: "PACKAGE_NOT_FOUND",
+      message: "Package could not be found for this agent.",
+      statusCode: 404,
+    });
+  }
+
+  const locker = await lockersCollection.findOne({
+    _id: updatedPackage.lockerId,
+  });
+
+  if (!locker) {
+    throw new AppError({
+      code: "LOCKER_NOT_FOUND",
+      message: "Locker for this package could not be found.",
+      statusCode: 404,
+    });
+  }
+
+  const response: UpdateAgentDropoffTimeResponse = {
+    package: toStoredPackageRecord(updatedPackage, agent, locker),
+  };
+
+  return reply.send(response);
 }

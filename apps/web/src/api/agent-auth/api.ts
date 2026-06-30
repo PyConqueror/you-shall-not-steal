@@ -1,4 +1,5 @@
 import type { AgentSession } from "./session";
+import { getApiBaseUrl } from "../base-url";
 
 type AgentLoginErrorResponse = {
   error?: {
@@ -6,13 +7,6 @@ type AgentLoginErrorResponse = {
     message?: string;
   };
 };
-
-const DEFAULT_API_BASE_URL = "http://localhost:3001";
-
-function getApiBaseUrl() {
-  const env = import.meta.env as Record<string, string | undefined>;
-  return (env.VITE_API_BASE_URL ?? DEFAULT_API_BASE_URL).replace(/\/+$/, "");
-}
 
 function toAgentLoginErrorMessage(payload: AgentLoginErrorResponse | null) {
   switch (payload?.error?.code) {

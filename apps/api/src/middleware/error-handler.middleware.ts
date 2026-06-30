@@ -1,4 +1,8 @@
 import type { FastifyInstance } from "fastify";
+import {
+  hasZodFastifySchemaValidationErrors,
+  isResponseSerializationError,
+} from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { AppError } from "@/errors/app-error";
 
@@ -22,6 +26,22 @@ function normalizeError(error: unknown): NormalizedError {
       code: "INVALID_REQUEST",
       message: "Request validation failed.",
       statusCode: 400,
+    };
+  }
+
+  if (hasZodFastifySchemaValidationErrors(error)) {
+    return {
+      code: "INVALID_REQUEST",
+      message: "Request validation failed.",
+      statusCode: 400,
+    };
+  }
+
+  if (isResponseSerializationError(error)) {
+    return {
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Response validation failed.",
+      statusCode: 500,
     };
   }
 

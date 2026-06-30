@@ -1,36 +1,53 @@
-import { useMemo } from "react";
 import type { Locker, PackageSize } from "../../types";
 import { Button } from "../../components/Button";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { StepHeader } from "../../components/StepHeader";
-import { getSmallestAvailableLocker } from "../../utils/lockerRules";
 import { LockerStation } from "../locker-station/LockerStation";
 
 interface AutoLockerAssignmentStepProps {
   lockers: Locker[];
   selectedSize: PackageSize;
+  recommendedLocker: Locker | null;
+  isLoading: boolean;
+  isSubmitting: boolean;
+  hasLoadError: boolean;
+  errorMessage: string | null;
   onConfirm: (assignedLocker: Locker) => void;
   onBack: () => void;
 }
 
-export function AutoLockerAssignmentStep({ 
-  lockers, 
-  selectedSize, 
-  onConfirm, 
-  onBack 
+export function AutoLockerAssignmentStep({
+  lockers,
+  selectedSize,
+  recommendedLocker,
+  isLoading,
+  isSubmitting,
+  hasLoadError,
+  errorMessage,
+  onConfirm,
+  onBack,
 }: AutoLockerAssignmentStepProps) {
-  const assignedLocker = useMemo(() => {
-    return getSmallestAvailableLocker(lockers, selectedSize);
-  }, [lockers, selectedSize]);
+  const showNoLockerMessage =
+    !isLoading && !errorMessage && recommendedLocker === null;
 
   return (
     <section>
-      {assignedLocker ? (
+      {isLoading ? (
+        <StepHeader
+          title="Finding recommended locker"
+          description={`Checking the best available locker for your ${selectedSize} package.`}
+        />
+      ) : hasLoadError ? (
+        <StepHeader
+          title="Unable to load lockers"
+          description="We couldn't load locker availability right now."
+        />
+      ) : recommendedLocker ? (
         <StepHeader
           title="Recommended Locker"
           description={
             <>
-              <strong>{assignedLocker.lockerId}</strong>
+              <strong>{recommendedLocker.lockerId}</strong>
               <br />
               This is the smallest available locker that can fit your{" "}
               <span className="text-capitalize">{selectedSize}</span> package.
@@ -44,26 +61,33 @@ export function AutoLockerAssignmentStep({
         />
       )}
 
-      {!assignedLocker && (
+      <ErrorMessage message={errorMessage} />
+
+      {showNoLockerMessage && (
         <ErrorMessage message="No suitable locker is available right now. Please try again later." />
       )}
 
       <LockerStation
         lockers={lockers}
         selectedPackageSize={selectedSize}
-        autoAssignedLockerId={assignedLocker?.id || null}
+        autoAssignedLockerId={recommendedLocker?.id ?? null}
       />
 
       <div className="action-row action-row-spaced">
-        <Button variant="outline" onClick={onBack} fullWidth>
+        <Button
+          variant="outline"
+          onClick={onBack}
+          disabled={isSubmitting}
+          fullWidth
+        >
           Back
         </Button>
         <Button
-          onClick={() => assignedLocker && onConfirm(assignedLocker)}
-          disabled={!assignedLocker}
+          onClick={() => recommendedLocker && onConfirm(recommendedLocker)}
+          disabled={isLoading || isSubmitting || !recommendedLocker}
           fullWidth
         >
-          Confirm Drop-Off
+          {isSubmitting ? "Confirming..." : "Confirm Drop-Off"}
         </Button>
       </div>
     </section>

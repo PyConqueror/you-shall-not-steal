@@ -18,8 +18,14 @@ export function getLockersCollection(db: Db): Collection<LockerEntity> {
 }
 
 export async function ensureLockerIndexes(db: Db): Promise<void> {
-  await getLockersCollection(db).createIndex(
-    { lockerId: 1 },
-    { unique: true, name: 'lockers_lockerId_unique' },
-  )
+  await Promise.all([
+    getLockersCollection(db).createIndex(
+      { lockerId: 1 },
+      { unique: true, name: 'lockers_lockerId_unique' },
+    ),
+    getLockersCollection(db).createIndex(
+      { status: 1, size: 1, lockerId: 1 },
+      { name: 'lockers_availability_idx' },
+    ),
+  ])
 }

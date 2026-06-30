@@ -10,7 +10,7 @@ export type FlowStateContextValue = {
   retrievalPackage: PackageRecord | null;
   beginAgentFlow: (agent: Agent) => void;
   setSelectedPackageSize: (size: PackageSize | null) => void;
-  confirmLockerDropOff: (assignedLocker: Locker) => PackageRecord | null;
+  recordAgentDropOff: (pkg: PackageRecord, locker: Locker) => void;
   updateLatestDropOffTime: (newTime: string) => void;
   resetAgentFlow: () => void;
   selectRetrievalPackage: (pkg: PackageRecord) => void;

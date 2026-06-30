@@ -29,8 +29,8 @@ export async function ensurePackageIndexes(db: Db): Promise<void> {
       { name: 'packages_lookup_idx' },
     ),
     getPackagesCollection(db).createIndex(
-      { pickupCode: 1 },
-      { name: 'packages_pickupCode_idx' },
+      { pickupCode: 1, status: 1 },
+      { name: 'packages_active_pickupCode_idx' },
     ),
     getPackagesCollection(db).createIndex(
       { status: 1 },

@@ -6,7 +6,6 @@ import {
 } from "react";
 import { createMockPackages, mockLockers } from "shared";
 import type { Agent, Locker, PackageRecord, PackageSize } from "../types";
-import { generatePickupCode } from "../utils/pickupCode";
 import { calculateStorageCharge } from "../utils/storageCharges";
 import { getAgentSession } from "../api/agent-auth/session";
 import { FlowStateContext, type FlowStateContextValue } from "./flowState";
@@ -37,37 +36,37 @@ export function FlowStateProvider({ children }: FlowStateProviderProps) {
     setLatestDropOffPackage(null);
   }, []);
 
-  const confirmLockerDropOff = useCallback((assignedLocker: Locker) => {
-    if (!selectedAgent || !selectedPackageSize) {
-      return null;
-    }
+  const recordAgentDropOff = useCallback(
+    (pkg: PackageRecord, assignedLocker: Locker) => {
+      setPackages((currentPackages) => {
+        const packagesWithoutDuplicate = currentPackages.filter(
+          (currentPackage) => currentPackage.packageId !== pkg.packageId,
+        );
 
-    const newPackage: PackageRecord = {
-      packageId: `pkg_${Date.now()}`,
-      agentId: selectedAgent.agentId,
-      lockerId: assignedLocker.lockerId,
-      packageSize: selectedPackageSize,
-      pickupCode: generatePickupCode(),
-      status: "stored",
-      droppedOffAt: new Date().toISOString(),
-    };
+        return [...packagesWithoutDuplicate, pkg];
+      });
 
-    setPackages((currentPackages) => [...currentPackages, newPackage]);
-    setLockers((currentLockers) =>
-      currentLockers.map((locker) =>
-        locker.id === assignedLocker.id
-          ? {
-              ...locker,
-              status: "occupied",
-              currentPackageId: newPackage.packageId,
-            }
-          : locker,
-      ),
-    );
-    setLatestDropOffPackage(newPackage);
+      setLockers((currentLockers) => {
+        const lockerIndex = currentLockers.findIndex((locker) => {
+          return (
+            locker.id === assignedLocker.id ||
+            locker.lockerId === assignedLocker.lockerId
+          );
+        });
 
-    return newPackage;
-  }, [selectedAgent, selectedPackageSize]);
+        if (lockerIndex === -1) {
+          return [...currentLockers, assignedLocker];
+        }
+
+        return currentLockers.map((locker, index) =>
+          index === lockerIndex ? assignedLocker : locker,
+        );
+      });
+
+      setLatestDropOffPackage(pkg);
+    },
+    [],
+  );
 
   const updateLatestDropOffTime = useCallback((newTime: string) => {
     setLatestDropOffPackage((currentPackage) => {
@@ -149,7 +148,7 @@ export function FlowStateProvider({ children }: FlowStateProviderProps) {
       retrievalPackage,
       beginAgentFlow,
       setSelectedPackageSize,
-      confirmLockerDropOff,
+      recordAgentDropOff,
       updateLatestDropOffTime,
       resetAgentFlow,
       selectRetrievalPackage,
@@ -165,7 +164,7 @@ export function FlowStateProvider({ children }: FlowStateProviderProps) {
       latestDropOffPackage,
       retrievalPackage,
       beginAgentFlow,
-      confirmLockerDropOff,
+      recordAgentDropOff,
       updateLatestDropOffTime,
       resetAgentFlow,
       selectRetrievalPackage,

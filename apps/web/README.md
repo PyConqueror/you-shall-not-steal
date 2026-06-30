@@ -29,7 +29,7 @@ React + TypeScript frontend for the Smart Package Locker system.
 | `react` | ^18.2 | UI rendering and hooks |
 | `react-dom` | ^18.2 | DOM mounting |
 | `react-router-dom` | ^7.18 | Declarative routing with nested routes and redirects |
-| `shared` | workspace | Mock locker/package data for customer retrieval |
+| `shared` | workspace | Shared seed/reference data used across the monorepo |
 
 ### Dev & build
 
@@ -91,7 +91,7 @@ Copy `.env.example` to `.env`:
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | `http://localhost:3001` | Base URL for all API calls (read in `src/api/base-url.ts`) |
 
-The API must be running for the agent drop-off flow. Customer retrieval currently uses in-memory mock package data from the `shared` package.
+The API must be running for both the agent drop-off and customer retrieval flows.
 
 ## Commands
 
@@ -147,6 +147,7 @@ src/
 │   │   ├── AutoLockerAssignmentStep.tsx
 │   │   └── DropOffSuccessStep.tsx
 │   ├── customer-retrieval/
+│   │   ├── api.ts                    # Retrieval lookup + confirm clients
 │   │   ├── RetrievalFormStep.tsx
 │   │   ├── RetrievalConfirmStep.tsx
 │   │   └── RetrievalSuccessStep.tsx
@@ -186,14 +187,13 @@ src/
 
 | State | Source | Used by |
 | --- | --- | --- |
-| `lockers` | `mockLockers` from `shared` | Locker station UI, customer flow |
-| `packages` | `createMockPackages()` from `shared` | Customer retrieval lookup |
 | `selectedAgent` | API login response | Agent flow steps |
 | `selectedPackageSize` | User selection | Locker recommendation query |
 | `latestDropOffPackage` | API drop-off response | Success screen |
-| `retrievalPackage` | Customer form selection | Confirm + success screens |
+| `retrievalPackage` | Retrieval lookup / confirm responses | Confirm + success screens |
+| `retrievalChargePreview` | Retrieval lookup response | Customer confirm screen |
 
-Agent drop-off writes to the API; customer retrieval reads from local state.
+Both agent drop-off and customer retrieval call the API. Flow state only keeps the selected package/session context between pages.
 
 ## Agent flow (API-integrated)
 
@@ -216,19 +216,21 @@ Agent drop-off writes to the API; customer retrieval reads from local state.
 
 Try agent IDs: `AGT-1001`, `AGT-1002`, or `AGT-1003`.
 
-## Customer flow (local mock)
+## Customer flow (API-integrated)
 
 ```
-/customer/form → lookup by lockerId + pickupCode
+/customer/form → POST /customer/retrieval/lookup
     ↓
-/customer/confirm → review charges (calculateStorageCharge)
+/customer/confirm → review server-calculated charge preview
     ↓
-/customer/success → mark retrieved in local state
+/customer/confirm → POST /customer/retrieval/confirm
+    ↓
+/customer/success → display confirmed retrieval details
 ```
 
-Validates against `packages` in React state, seeded from `createMockPackages()`. Storage charges are calculated client-side in `utils/storageCharges.ts`. API integration is planned for a later phase.
+The customer flow validates locker credentials against the API, renders a server-calculated charge preview, and confirms retrieval with a second API call that marks the package as retrieved and frees the locker.
 
-**Test credentials:** locker `S-02`, pickup code `111111`.
+**Test credentials:** locker `S-02`, pickup code `111111` or locker `M-02`, pickup code `222222`.
 
 ## API client pattern
 
@@ -246,4 +248,4 @@ fetch(`${getApiBaseUrl()}/agent/dropoff/lockers?packageSize=${size}`, {
 });
 ```
 
-Errors are parsed from `{ error: { code, message } }` and thrown as `AgentDropoffApiError`.
+Errors are parsed from `{ error: { code, message } }` and thrown as typed client errors such as `AgentDropoffApiError` and `CustomerRetrievalApiError`.

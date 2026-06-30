@@ -169,14 +169,14 @@ The agent flow calls `POST /auth/agent/login` for a JWT, then `GET /agent/dropof
 2. Review package details and any storage charges.
 3. Confirm retrieval.
 
-The customer flow currently runs against in-memory mock package data in the web app. API-backed retrieval is planned for a later phase.
+The customer flow calls `POST /customer/retrieval/lookup` to validate the locker credentials and preview storage charges, then `POST /customer/retrieval/confirm` to mark the package as retrieved and free the locker.
 
 **Quick test credentials**
 
 | Flow | Credential |
 | --- | --- |
 | Agent login | `AGT-1001`, `AGT-1002`, or `AGT-1003` |
-| Customer retrieval | Locker `S-02`, pickup code `111111` |
+| Customer retrieval | Locker `S-02`, pickup code `111111` or locker `M-02`, pickup code `222222` |
 
 ## Architecture overview
 
@@ -186,7 +186,7 @@ The customer flow currently runs against in-memory mock package data in the web 
 │ React/Vite  │                     │   Fastify   │                 │          │
 └─────────────┘                     └─────────────┘                 └──────────┘
        │                                   │
-       └──────── shared (mock data) ───────┘
+       └──────── shared (seed data) ───────┘
 ```
 
 ## Further reading

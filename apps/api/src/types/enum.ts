@@ -1,10 +1,3 @@
-export enum RESPONSE_STATUS {
-  SUCCESS = "success",
-  ERROR = "error",
-}
-
-export type ResponseStatus = `${RESPONSE_STATUS}`;
-
 export enum PACKAGE_SIZE {
   SMALL = "small",
   MEDIUM = "medium",

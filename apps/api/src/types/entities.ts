@@ -5,7 +5,6 @@ import type {
   LockerStatus,
   PackageSize,
   PackageStatus,
-  ResponseStatus,
 } from './enum'
 
 export interface AgentEntity {
@@ -41,16 +40,3 @@ export type Agent = AgentEntity
 export type Locker = LockerEntity
 
 export type PackageRecord = PackageEntity
-
-export type ApiError = {
-  code: string
-  message: string
-  details?: Record<string, unknown>
-}
-
-export type ResponseModel<TData = unknown> = {
-  status: ResponseStatus
-  statusCode: number
-  data: TData | null
-  error?: ApiError
-}

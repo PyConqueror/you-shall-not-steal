@@ -20,6 +20,16 @@ const envSchema = z.object({
     .trim()
     .min(32, "JWT_SECRET must be at least 32 characters long."),
   AGENT_JWT_TTL_MINUTES: z.coerce.number().int().positive().default(15),
+  RESEND_API_KEY: z
+    .string()
+    .trim()
+    .min(1, "RESEND_API_KEY cannot be empty.")
+    .optional(),
+  RESEND_FROM_EMAIL: z
+    .string()
+    .trim()
+    .email("RESEND_FROM_EMAIL must be a valid email address.")
+    .optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

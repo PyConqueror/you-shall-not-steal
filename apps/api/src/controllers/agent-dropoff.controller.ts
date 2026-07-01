@@ -132,6 +132,7 @@ export async function dropOffPackage(
     lockerId: reservedLocker._id,
     packageSize: request.body.packageSize,
     pickupCode,
+    customerEmail: null,
     status: PACKAGE_STATUS.STORED,
     droppedOffAt,
     retrievedAt: null,

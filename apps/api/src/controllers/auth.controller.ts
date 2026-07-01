@@ -5,6 +5,7 @@ import {
   type AgentLoginRequest,
   type AgentLoginResponse,
 } from "@/schemas/auth";
+import { AGENT_STATUS } from "@/types/enum";
 import { toPublicAgent } from "@/utils/auth.util";
 
 
@@ -26,7 +27,7 @@ export async function loginAgentController(
     });
   }
 
-  if (agent.status !== "active") {
+  if (agent.status !== AGENT_STATUS.ACTIVE) {
     throw new AppError({
       code: "AGENT_INACTIVE",
       message: "Agent account is inactive.",

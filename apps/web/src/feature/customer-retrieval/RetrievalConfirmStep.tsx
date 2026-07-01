@@ -1,9 +1,9 @@
-import type { PackageRecord, StorageChargePreview } from "../../types";
-import { Button } from "../../components/Button";
-import { Card } from "../../components/Card";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { StepHeader } from "../../components/StepHeader";
-import { formatCurrency } from "../../utils/storageCharges";
+import type { PackageRecord, StorageChargePreview } from "@/types";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
+import { formatCurrency } from "@/utils/storageCharges";
 
 interface RetrievalConfirmStepProps {
   packageRecord: PackageRecord;

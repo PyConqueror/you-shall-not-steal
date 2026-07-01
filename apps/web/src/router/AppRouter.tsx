@@ -1,14 +1,14 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { AppShell } from "../components/AppShell";
-import { ProtectedAgentRoute } from "../api/agent-auth/ProtectedAgentRoute";
-import { AgentIdPage } from "../pages/AgentIdPage";
-import { AgentLockerAssignmentPage } from "../pages/AgentLockerAssignmentPage";
-import { AgentPackageSizePage } from "../pages/AgentPackageSizePage";
-import { AgentSuccessPage } from "../pages/AgentSuccessPage";
-import { CustomerRetrievalConfirmPage } from "../pages/CustomerRetrievalConfirmPage";
-import { CustomerRetrievalFormPage } from "../pages/CustomerRetrievalFormPage";
-import { CustomerRetrievalSuccessPage } from "../pages/CustomerRetrievalSuccessPage";
-import { HomePage } from "../pages/HomePage";
+import { AppShell } from "@/components/AppShell";
+import { ProtectedAgentRoute } from "@/feature/agent-auth/ProtectedAgentRoute";
+import { AgentIdPage } from "@/pages/AgentIdPage";
+import { AgentLockerAssignmentPage } from "@/pages/AgentLockerAssignmentPage";
+import { AgentPackageSizePage } from "@/pages/AgentPackageSizePage";
+import { AgentSuccessPage } from "@/pages/AgentSuccessPage";
+import { CustomerRetrievalConfirmPage } from "@/pages/CustomerRetrievalConfirmPage";
+import { CustomerRetrievalFormPage } from "@/pages/CustomerRetrievalFormPage";
+import { CustomerRetrievalSuccessPage } from "@/pages/CustomerRetrievalSuccessPage";
+import { HomePage } from "@/pages/HomePage";
 
 function AppLayout() {
   return (

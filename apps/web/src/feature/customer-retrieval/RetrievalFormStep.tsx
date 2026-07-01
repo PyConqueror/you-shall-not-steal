@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "../../components/Button";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { StepHeader } from "../../components/StepHeader";
-import type { CustomerRetrievalCredentials } from "./api";
+import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
+import type { CustomerRetrievalCredentials } from "@/lib/api/customer-retrieval/api";
 
 interface RetrievalFormStepProps {
   onNext: (input: CustomerRetrievalCredentials) => Promise<void>;

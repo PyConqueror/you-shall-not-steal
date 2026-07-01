@@ -1,8 +1,8 @@
-import type { PackageRecord } from "../../types";
-import { Button } from "../../components/Button";
-import { Card } from "../../components/Card";
-import { SuccessPanel } from "../../components/SuccessPanel";
-import { formatCurrency } from "../../utils/storageCharges";
+import type { PackageRecord } from "@/types";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { SuccessPanel } from "@/components/SuccessPanel";
+import { formatCurrency } from "@/utils/storageCharges";
 
 interface RetrievalSuccessStepProps {
   packageRecord: PackageRecord;

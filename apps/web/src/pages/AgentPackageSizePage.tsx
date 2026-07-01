@@ -1,6 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { PackageSizeStep } from "../api/agent-dropoff/PackageSizeStep";
-import { useFlowState } from "../state/useFlowState";
+import { PackageSizeStep } from "@/feature/agent-dropoff/PackageSizeStep";
+import { useFlowState } from "@/state/useFlowState";
 
 export function AgentPackageSizePage() {
   const navigate = useNavigate();

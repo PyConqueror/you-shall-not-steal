@@ -1,5 +1,5 @@
-import type { Locker, PackageRecord, StorageChargePreview } from "../../types";
-import { getApiBaseUrl } from "../base-url";
+import type { Locker, PackageRecord, StorageChargePreview } from "@/types";
+import { getApiBaseUrl } from "@/lib/api/base-url";
 
 type CustomerRetrievalErrorResponse = {
   error?: {

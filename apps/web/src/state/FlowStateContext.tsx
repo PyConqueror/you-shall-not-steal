@@ -9,9 +9,9 @@ import type {
   PackageRecord,
   PackageSize,
   StorageChargePreview,
-} from "../types";
-import { getAgentSession } from "../api/agent-auth/session";
-import { FlowStateContext, type FlowStateContextValue } from "./flowState";
+} from "@/types";
+import { getAgentSession } from "@/feature/agent-auth/session";
+import { FlowStateContext, type FlowStateContextValue } from "@/state/flowState";
 
 type FlowStateProviderProps = {
   children: ReactNode;

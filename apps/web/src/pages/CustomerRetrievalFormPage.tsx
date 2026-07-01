@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   lookupCustomerRetrieval,
   type CustomerRetrievalCredentials,
-} from "../api/customer-retrieval/api";
-import { RetrievalFormStep } from "../api/customer-retrieval/RetrievalFormStep";
-import { clearAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+} from "@/lib/api/customer-retrieval/api";
+import { RetrievalFormStep } from "@/feature/customer-retrieval/RetrievalFormStep";
+import { clearAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function CustomerRetrievalFormPage() {
   const navigate = useNavigate();

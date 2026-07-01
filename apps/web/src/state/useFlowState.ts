@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FlowStateContext } from "./flowState";
+import { FlowStateContext } from "@/state/flowState";
 
 export function useFlowState() {
   const context = useContext(FlowStateContext);

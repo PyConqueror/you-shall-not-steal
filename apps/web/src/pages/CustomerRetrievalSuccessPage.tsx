@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { RetrievalSuccessStep } from "../api/customer-retrieval/RetrievalSuccessStep";
-import { clearAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+import { RetrievalSuccessStep } from "@/feature/customer-retrieval/RetrievalSuccessStep";
+import { clearAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function CustomerRetrievalSuccessPage() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import type { Locker } from "../../types";
+import type { Locker } from "@/types";
 
 interface LockerCardProps {
   locker: Locker;

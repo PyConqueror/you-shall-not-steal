@@ -4,7 +4,7 @@ import type {
   PackageRecord,
   PackageSize,
   StorageChargePreview,
-} from "../types";
+} from "@/types";
 
 export type FlowStateContextValue = {
   selectedAgent: Agent | null;

@@ -1,5 +1,5 @@
-import type { Locker, PackageRecord, PackageSize } from "../../types";
-import { getApiBaseUrl } from "../base-url";
+import type { Locker, PackageRecord, PackageSize } from "@/types";
+import { getApiBaseUrl } from "@/lib/api/base-url";
 
 type AgentDropoffErrorResponse = {
   error?: {

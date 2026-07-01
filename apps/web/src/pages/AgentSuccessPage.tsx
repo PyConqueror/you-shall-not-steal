@@ -4,10 +4,10 @@ import {
   AgentDropoffApiError,
   sendEmail,
   updateAgentDropoffTime,
-} from "../api/agent-dropoff/api";
-import { DropOffSuccessStep } from "../api/agent-dropoff/DropOffSuccessStep";
-import { clearAgentSession, getAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+} from "@/lib/api/agent-dropoff/api";
+import { DropOffSuccessStep } from "@/feature/agent-dropoff/DropOffSuccessStep";
+import { clearAgentSession, getAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function AgentSuccessPage() {
   const navigate = useNavigate();

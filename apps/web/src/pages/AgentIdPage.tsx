@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { AgentIdStep } from "../api/agent-dropoff/AgentIdStep";
-import { loginAgent } from "../api/agent-auth/api";
-import { clearAgentSession, createAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+import { AgentIdStep } from "@/feature/agent-dropoff/AgentIdStep";
+import { loginAgent } from "@/lib/api/agent-auth/api";
+import { clearAgentSession, createAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function AgentIdPage() {
   const navigate = useNavigate();

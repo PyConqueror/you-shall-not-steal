@@ -1,5 +1,5 @@
-import type { AgentSession } from "./session";
-import { getApiBaseUrl } from "../base-url";
+import type { AgentSession } from "@/feature/agent-auth/session";
+import { getApiBaseUrl } from "@/lib/api/base-url";
 
 type AgentLoginErrorResponse = {
   error?: {

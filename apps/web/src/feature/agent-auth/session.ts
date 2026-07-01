@@ -1,4 +1,4 @@
-import type { Agent } from "../../types";
+import type { Agent } from "@/types";
 
 const AGENT_SESSION_KEY = "smart-locker-agent-session";
 

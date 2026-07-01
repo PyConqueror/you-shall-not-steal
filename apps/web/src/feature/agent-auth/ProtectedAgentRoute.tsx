@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { hasValidAgentSession } from "./session";
+import { hasValidAgentSession } from "@/feature/agent-auth/session";
 
 export function ProtectedAgentRoute() {
   const location = useLocation();

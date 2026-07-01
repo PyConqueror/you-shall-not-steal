@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { confirmCustomerRetrieval } from "../api/customer-retrieval/api";
-import { RetrievalConfirmStep } from "../api/customer-retrieval/RetrievalConfirmStep";
-import { useFlowState } from "../state/useFlowState";
+import { confirmCustomerRetrieval } from "@/lib/api/customer-retrieval/api";
+import { RetrievalConfirmStep } from "@/feature/customer-retrieval/RetrievalConfirmStep";
+import { useFlowState } from "@/state/useFlowState";
 
 export function CustomerRetrievalConfirmPage() {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "../../components/Button";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { StepHeader } from "../../components/StepHeader";
+import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
 
 interface AgentIdStepProps {
   onNext: (agentId: string) => Promise<void>;

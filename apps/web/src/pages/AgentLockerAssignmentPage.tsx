@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { AutoLockerAssignmentStep } from "../api/agent-dropoff/AutoLockerAssignmentStep";
+import { AutoLockerAssignmentStep } from "@/feature/agent-dropoff/AutoLockerAssignmentStep";
 import {
   AgentDropoffApiError,
   confirmAgentDropoff,
   getAgentDropoffLockers,
-} from "../api/agent-dropoff/api";
+} from "@/lib/api/agent-dropoff/api";
 import {
   clearAgentSession,
   getAgentSession,
-} from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
-import type { Locker } from "../types";
+} from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
+import type { Locker } from "@/types";
 
 export function AgentLockerAssignmentPage() {
   const navigate = useNavigate();

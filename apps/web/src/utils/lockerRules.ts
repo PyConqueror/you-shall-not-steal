@@ -1,4 +1,4 @@
-import type { Locker, PackageSize } from "../types";
+import type { Locker, PackageSize } from "@/types";
 
 export function canPackageFitLocker(
   packageSize: PackageSize,

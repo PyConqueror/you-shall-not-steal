@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { confirmCustomerRetrieval } from "@/lib/api/customer-retrieval/api";
+import { getErrorMessage } from "@/lib/errors/get-error-message";
 import { RetrievalConfirmStep } from "@/feature/customer-retrieval/RetrievalConfirmStep";
 import { useFlowState } from "@/state/useFlowState";
 
@@ -37,9 +38,10 @@ export function CustomerRetrievalConfirmPage() {
       navigate("/customer/success");
     } catch (confirmError) {
       setErrorMessage(
-        confirmError instanceof Error
-          ? confirmError.message
-          : "Unable to complete the retrieval right now. Please try again.",
+        getErrorMessage(
+          confirmError,
+          "Unable to complete the retrieval right now. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);

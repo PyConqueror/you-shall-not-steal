@@ -5,6 +5,7 @@ import {
   type CustomerRetrievalCredentials,
 } from "@/lib/api/customer-retrieval/api";
 import { RetrievalFormStep } from "@/feature/customer-retrieval/RetrievalFormStep";
+import { getErrorMessage } from "@/lib/errors/get-error-message";
 import { clearAgentSession } from "@/feature/agent-auth/session";
 import { useFlowState } from "@/state/useFlowState";
 
@@ -31,9 +32,10 @@ export function CustomerRetrievalFormPage() {
       navigate("/customer/confirm");
     } catch (lookupError) {
       setErrorMessage(
-        lookupError instanceof Error
-          ? lookupError.message
-          : "Unable to find the package right now. Please try again.",
+        getErrorMessage(
+          lookupError,
+          "Unable to find the package right now. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);

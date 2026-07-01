@@ -19,10 +19,13 @@ Fastify + Bun backend for the Smart Package Locker system.
 - MongoDB connection lifecycle with health/readiness checks
 - JWT-based agent authentication (`@fastify/jwt`)
 - Agent drop-off: locker availability, recommendation, and package creation
+- Drop-off time update: agents can adjust `droppedOffAt` for storage-charge demos
+- Customer email (Resend): send pickup details to customers after drop-off
 - Customer retrieval: locker/pickup validation, charge preview, confirmation, and locker release
 - Automatic mock data seeding in non-production when the database is empty
 - Structured error handling with consistent API error responses
 - Security headers via `@fastify/helmet` and CORS via `@fastify/cors`
+- Test suite: Bun tests in `test-cases/`
 
 ## Dependencies
 
@@ -37,6 +40,7 @@ Fastify + Bun backend for the Smart Package Locker system.
 | `fastify-type-provider-zod` | ^7.0 | Compiles Zod schemas into Fastify validators and serializers |
 | `zod` | ^4.4 | Schema definitions for env, requests, and responses |
 | `mongodb` | 6.21 | Official MongoDB driver with Server API v1 |
+| `resend` | ^6.16 | Transactional email for pickup details |
 | `shared` | workspace | Mock seed data (agents, lockers, packages) |
 
 ### Dev
@@ -108,6 +112,8 @@ Schemas live in `src/schemas/`:
 | --- | --- |
 | `schemas/auth/` | Agent login request/response |
 | `schemas/agent-dropoff/` | Locker query, drop-off request/response, public locker and package shapes |
+| `schemas/customer-retrieval/` | Lookup and confirm request/response shapes |
+| `schemas/email/` | Send email request/response |
 | `schemas/system/` | Health and readiness responses |
 | `schemas/shared/` | Shared `apiErrorResponseSchema` |
 
@@ -127,6 +133,8 @@ Copy `.env.example` to `.env` and provide real values:
 | `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | `5000` | Connection timeout |
 | `JWT_SECRET` | — | Secret for signing agent JWTs (required, min 32 chars) |
 | `AGENT_JWT_TTL_MINUTES` | `15` | Token lifetime in minutes |
+| `RESEND_API_KEY` | — | Resend API key (optional at startup; required at runtime for email endpoint) |
+| `RESEND_FROM_EMAIL` | — | Verified sender address in Resend (optional at startup; required for email endpoint) |
 
 ## Commands
 
@@ -137,6 +145,7 @@ bun run dev
 bun run build
 bun run lint
 bun run typecheck
+bun run test
 ```
 
 From this directory:
@@ -145,6 +154,8 @@ From this directory:
 bun run dev      # bun --watch src/server.ts
 bun run build    # tsc + tsc-alias → dist/
 bun run start    # bun dist/server.js
+bun test         # run test-cases/
+bun run test:coverage
 ```
 
 ## Project layout
@@ -156,9 +167,11 @@ src/
 │   ├── db.config.ts      # connect / disconnect / ping singleton
 │   └── index.ts
 ├── controllers/
-│   ├── auth.controller.ts          # Agent login
-│   ├── agent-dropoff.controller.ts # Locker availability + drop-off
-│   └── system.controller.ts        # Health + readiness
+│   ├── auth.controller.ts              # Agent login
+│   ├── agent-dropoff.controller.ts     # Locker availability + drop-off
+│   ├── customer-retrieval.controller.ts # Lookup + confirm retrieval
+│   ├── email.controller.ts             # Send pickup details email
+│   └── system.controller.ts            # Health + readiness
 ├── db/
 │   ├── client.ts         # MongoClient setup, indexes, ping
 │   └── seed.ts           # seedDatabaseIfEmpty() from shared mocks
@@ -181,19 +194,25 @@ src/
 ├── routes/
 │   ├── auth.route.ts
 │   ├── agent-dropoff.route.ts
+│   ├── customer-retrieval.route.ts
+│   ├── email.route.ts
 │   ├── system.route.ts
 │   └── index.ts
 ├── schemas/              # Zod request/response schemas per domain
+├── test-cases/           # Bun test suites for controllers
 ├── types/
 │   ├── entities.ts       # MongoDB document shapes
 │   ├── enum.ts           # LOCKER_STATUS, PACKAGE_SIZE, etc.
 │   ├── auth.ts           # JWT payload types
 │   └── fastify.d.ts      # Module augmentation for decorators
 ├── utils/
+│   ├── agent-dropoff.util.ts   # Entity → API response mappers
+│   ├── auth.util.ts            # Agent entity → public agent
+│   ├── customer-retrieval.util.ts # Retrieval lookup + confirm helpers
+│   ├── email.util.ts           # Resend email templates + send
 │   ├── locker.util.ts          # Size-fit logic + smallest-locker recommendation
 │   ├── pickup-code.util.ts     # Unique 6-digit code generation
-│   ├── agent-dropoff.util.ts   # Entity → API response mappers
-│   └── auth.util.ts            # Agent entity → public agent
+│   └── storage-charges.util.ts # Tiered storage charge calculation
 └── server.ts             # buildServer() + startServer() entry point
 ```
 
@@ -244,6 +263,8 @@ All drop-off routes require `Authorization: Bearer <token>`.
 | --- | --- | --- |
 | `GET` | `/agent/dropoff/lockers?packageSize=small` | List all lockers and the recommended assignment |
 | `POST` | `/agent/dropoff` | Confirm drop-off, reserve locker, create package |
+| `POST` | `/agent/dropoff/dropped-off-at` | Update `droppedOffAt` on an existing package |
+| `POST` | `/agent/dropoff/email` | Email pickup details to the customer |
 
 **`GET /agent/dropoff/lockers` response (`200`):**
 
@@ -286,7 +307,8 @@ All drop-off routes require `Authorization: Bearer <token>`.
     "packageSize": "small",
     "pickupCode": "123456",
     "status": "stored",
-    "droppedOffAt": "2026-01-01T00:00:00.000Z"
+    "droppedOffAt": "2026-01-01T00:00:00.000Z",
+    "customerEmail": null
   },
   "locker": {
     "id": "...",
@@ -307,6 +329,38 @@ All drop-off routes require `Authorization: Bearer <token>`.
 | `LOCKER_SIZE_MISMATCH` | 400 | Package doesn't fit the selected locker |
 | `LOCKER_UNAVAILABLE` | 409 | Locker was taken between recommendation and confirmation |
 | `AUTHENTICATED_AGENT_NOT_FOUND` | 401 | JWT valid but agent no longer in database |
+
+**`POST /agent/dropoff/dropped-off-at` request:**
+
+```json
+{
+  "packageId": "pkg_...",
+  "droppedOffAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+**`POST /agent/dropoff/dropped-off-at` response (`200`):** Returns the updated package (same shape as drop-off response).
+
+**`POST /agent/dropoff/email` request:**
+
+```json
+{
+  "packageId": "pkg_...",
+  "customerEmail": "customer@example.com"
+}
+```
+
+**`POST /agent/dropoff/email` response (`200`):** Returns the updated package with `customerEmail` set.
+
+**Email error codes:**
+
+| Code | Status | When |
+| --- | --- | --- |
+| `PACKAGE_NOT_FOUND` | 404 | Package not found for the authenticated agent |
+| `PACKAGE_ALREADY_RETRIEVED` | 409 | Package was already retrieved |
+| `CUSTOMER_EMAIL_ALREADY_SENT` | 409 | Pickup details were already emailed for this package |
+| `CUSTOMER_EMAIL_NOT_CONFIGURED` | 503 | `RESEND_API_KEY` or `RESEND_FROM_EMAIL` not set |
+| `CUSTOMER_EMAIL_SEND_FAILED` | 502 | Resend API returned an error (DB write is rolled back) |
 
 ### Locker assignment rules
 

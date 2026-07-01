@@ -15,6 +15,8 @@ React + TypeScript frontend for the Smart Package Locker system.
 
 - Home page with entry points for agent and customer flows
 - Agent drop-off: ID login, package size selection, locker assignment, success screen
+- Agent success: email pickup details to the customer (`POST /agent/dropoff/email`)
+- Agent success: adjust drop-off timestamp (1/6/11 days ago presets) for storage-charge demos (`POST /agent/dropoff/dropped-off-at`)
 - Customer retrieval: locker/pickup code lookup, charge review, confirmation, success screen
 - JWT session storage with expiry for authenticated agent routes
 - Locker station visualization with status legend
@@ -29,7 +31,6 @@ React + TypeScript frontend for the Smart Package Locker system.
 | `react` | ^18.2 | UI rendering and hooks |
 | `react-dom` | ^18.2 | DOM mounting |
 | `react-router-dom` | ^7.18 | Declarative routing with nested routes and redirects |
-| `shared` | workspace | Shared seed/reference data used across the monorepo |
 
 ### Dev & build
 
@@ -46,14 +47,23 @@ React + TypeScript frontend for the Smart Package Locker system.
 
 ## Vite configuration
 
-`vite.config.ts` uses the React plugin with default settings:
+`vite.config.ts` uses the React plugin and a `@` path alias to `src/`:
 
 ```typescript
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 })
 ```
 
@@ -71,7 +81,7 @@ The app uses **custom CSS**, not Tailwind or a UI framework.
 | Design tokens | `:root` CSS variables | Colors, shadows, border radii, font families |
 | Fonts | `index.html` | [Fredoka](https://fonts.google.com/specimen/Fredoka) (headings) and [Nunito](https://fonts.google.com/specimen/Nunito) (body) via Google Fonts |
 | Theme color | `index.html` | `#ffc933` (warm yellow accent) |
-| Favicon | `public/box-logo.svg` | Package box icon |
+| Favicon | `public/box-logo.png` | Package box icon |
 
 Key CSS variables:
 
@@ -87,11 +97,11 @@ Key CSS variables:
 
 Copy `.env.example` to `.env`:
 
-| Variable | Default | Description |
+| Variable | Required | Description |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | `http://localhost:3001` | Base URL for all API calls (read in `src/api/base-url.ts`) |
+| `VITE_API_BASE_URL` | Yes | Base URL for all API calls (read in `src/lib/api/base-url.ts`; throws if unset) |
 
-The API must be running for both the agent drop-off and customer retrieval flows.
+The API must be running for both the agent drop-off and customer retrieval flows. See the [root README](../../README.md) and [API README](../api/README.md) for backend setup.
 
 ## Commands
 
@@ -135,50 +145,54 @@ Protected agent routes are wrapped by `ProtectedAgentRoute`, which checks for a 
 
 ```
 src/
-├── api/
+├── lib/api/                 # Typed API clients + requestJson helper
 │   ├── agent-auth/
-│   │   ├── api.ts                    # POST /auth/agent/login client
-│   │   ├── session.ts                # sessionStorage JWT helpers
-│   │   └── ProtectedAgentRoute.tsx   # Auth guard component
+│   │   ├── api.ts           # POST /auth/agent/login client
+│   │   └── session.ts       # sessionStorage JWT helpers
 │   ├── agent-dropoff/
-│   │   ├── api.ts                    # Locker availability + drop-off clients
+│   │   └── api.ts           # Locker availability, drop-off, email, time update
+│   ├── customer-retrieval/
+│   │   └── api.ts           # Retrieval lookup + confirm clients
+│   ├── base-url.ts          # VITE_API_BASE_URL resolver
+│   ├── client.ts            # requestJson + network error handling
+│   └── errors.ts            # ApiError base class
+├── feature/                 # Feature UI + auth guard
+│   ├── agent-auth/
+│   │   └── ProtectedAgentRoute.tsx
+│   ├── agent-dropoff/
 │   │   ├── AgentIdStep.tsx
 │   │   ├── PackageSizeStep.tsx
 │   │   ├── AutoLockerAssignmentStep.tsx
 │   │   └── DropOffSuccessStep.tsx
 │   ├── customer-retrieval/
-│   │   ├── api.ts                    # Retrieval lookup + confirm clients
 │   │   ├── RetrievalFormStep.tsx
 │   │   ├── RetrievalConfirmStep.tsx
 │   │   └── RetrievalSuccessStep.tsx
-│   ├── locker-station/
-│   │   ├── LockerStation.tsx         # Grid visualization
-│   │   ├── LockerCard.tsx
-│   │   └── LockerLegend.tsx
-│   └── base-url.ts                   # VITE_API_BASE_URL resolver
+│   └── locker-station/
+│       ├── LockerStation.tsx
+│       ├── LockerCard.tsx
+│       └── LockerLegend.tsx
 ├── components/
-│   ├── AppShell.tsx                  # Layout wrapper with header
+│   ├── AppShell.tsx
 │   ├── Button.tsx
 │   ├── Card.tsx
 │   ├── ErrorMessage.tsx
 │   ├── StepHeader.tsx
 │   └── SuccessPanel.tsx
-├── features/                         # Parallel feature UI (legacy/alternate)
-├── pages/                            # Thin route wrappers
+├── pages/                   # Thin route wrappers
 ├── router/
 │   └── AppRouter.tsx
 ├── state/
-│   ├── FlowStateContext.tsx          # React context provider
-│   ├── flowState.ts                  # Context type definitions
-│   └── useFlowState.ts               # Context hook
+│   ├── FlowStateContext.tsx
+│   ├── flowState.ts
+│   └── useFlowState.ts
 ├── styles/
 │   └── global.css
 ├── types/
-│   └── index.ts                      # Agent, Locker, PackageRecord, etc.
 └── utils/
-    ├── lockerRules.ts                # Client-side size-fit logic
-    ├── pickupCode.ts                 # Pickup code formatting
-    └── storageCharges.ts             # Charge calculation for retrieval
+    ├── lockerRules.ts
+    ├── pickupCode.ts
+    └── storageCharges.ts
 ```
 
 ## State management
@@ -206,13 +220,16 @@ Both agent drop-off and customer retrieval call the API. Flow state only keeps t
               → POST /agent/dropoff
     ↓
 /agent/success → display pickup code
+              → optional POST /agent/dropoff/email
+              → optional POST /agent/dropoff/dropped-off-at
 ```
 
 1. User enters an agent ID on `/agent/id`.
 2. `loginAgent()` calls `POST /auth/agent/login` and stores `{ token, expiresAt, agent }` in `sessionStorage`.
 3. `ProtectedAgentRoute` blocks `/agent/size`, `/agent/locker`, and `/agent/success` without a valid session.
-4. Locker page fetches availability and confirms drop-off via the API clients in `src/api/agent-dropoff/api.ts`.
-5. `AgentDropoffApiError` surfaces API error codes (e.g. `LOCKER_UNAVAILABLE`) to the UI.
+4. Locker page fetches availability and confirms drop-off via the API clients in `src/lib/api/agent-dropoff/api.ts`.
+5. Success screen can email pickup details or adjust the drop-off timestamp for storage-charge testing.
+6. `AgentDropoffApiError` surfaces API error codes (e.g. `LOCKER_UNAVAILABLE`) to the UI.
 
 Try agent IDs: `AGT-1001`, `AGT-1002`, or `AGT-1003`.
 
@@ -234,18 +251,24 @@ The customer flow validates locker credentials against the API, renders a server
 
 ## API client pattern
 
-All API calls go through typed clients in `src/api/`:
+All API calls go through typed clients in `src/lib/api/`. Shared helpers live in `client.ts` and `errors.ts`:
 
 ```typescript
-// base-url.ts
+// base-url.ts — required at build/runtime
 export function getApiBaseUrl() {
-  return import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (!apiBaseUrl) {
+    throw new Error("VITE_API_BASE_URL is not configured.");
+  }
+  return apiBaseUrl.replace(/\/+$/, "");
 }
 
-// agent-dropoff/api.ts
-fetch(`${getApiBaseUrl()}/agent/dropoff/lockers?packageSize=${size}`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
+// client.ts — wraps fetch with typed error mapping
+export async function requestJson<T>(
+  url: string,
+  init: RequestInit,
+  mapError: MapApiError,
+): Promise<T> { /* ... */ }
 ```
 
 Errors are parsed from `{ error: { code, message } }` and thrown as typed client errors such as `AgentDropoffApiError` and `CustomerRetrievalApiError`.

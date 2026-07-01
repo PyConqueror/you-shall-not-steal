@@ -99,6 +99,8 @@ Returns 2 stored packages. Accepts an optional `referenceDate` (defaults to `Dat
 
 Runs automatically in `startServer()` when `NODE_ENV !== "production"`.
 
+Post-seed mutations (email sends, drop-off time updates, new drop-offs, retrievals) change live database records and do not alter the seed definitions in this package.
+
 ### Web (`apps/web`)
 
 The web app no longer looks up customer retrieval packages from local mock state. Instead, it calls the API endpoints backed by the seeded MongoDB data:

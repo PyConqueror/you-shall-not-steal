@@ -5,6 +5,20 @@
 
 A package locker management system where delivery agents drop off packages into available lockers and customers retrieve them using a pickup code.
 
+**Live:** [https://locker.wanaqim.dev/](https://locker.wanaqim.dev/)
+
+<p align="center">
+  <a href="https://github.com/PyConqueror/you-shall-not-steal/actions/workflows/ci.yml">
+    <img src="https://github.com/PyConqueror/you-shall-not-steal/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" />
+  </a>
+  <a href="https://github.com/PyConqueror/you-shall-not-steal/deployments/activity_log?environments_filter=Production">
+    <img src="https://img.shields.io/github/deployments/PyConqueror/you-shall-not-steal/Production?label=Production" alt="Production" />
+  </a>
+  <a href="https://github.com/PyConqueror/you-shall-not-steal/deployments/activity_log?environments_filter=Preview">
+    <img src="https://img.shields.io/github/deployments/PyConqueror/you-shall-not-steal/Preview?label=Preview" alt="Preview" />
+  </a>
+</p>
+
 <p align="center">
   <a href="https://skillicons.dev">
     <img
@@ -22,7 +36,7 @@ smart-package-locker/
 │   ├── web/          # React + Vite frontend
 │   └── api/          # Fastify + MongoDB backend
 ├── packages/
-│   └── shared/       # Shared mock data for seeding and local UI state
+│   └── shared/       # Shared mock data for API database seeding
 ├── package.json      # Bun workspace root
 └── turbo.json        # Turborepo task orchestration
 ```
@@ -30,8 +44,8 @@ smart-package-locker/
 | Package | Description |
 | --- | --- |
 | [`apps/web`](./apps/web) | React UI for agent drop-off and customer retrieval flows |
-| [`apps/api`](./apps/api) | Fastify API with JWT auth, locker assignment, and drop-off |
-| [`packages/shared`](./packages/shared) | Mock agents, lockers, and packages used by the API seed and web app |
+| [`apps/api`](./apps/api) | Fastify API with JWT auth, locker assignment, drop-off, customer retrieval, Resend email, and drop-off time updates |
+| [`packages/shared`](./packages/shared) | Mock agents, lockers, and packages used by the API seed script |
 
 ## Tech stack
 
@@ -61,7 +75,6 @@ smart-package-locker/
 | --- | --- |
 | `eslint-plugin-react-hooks` | Enforces Rules of Hooks |
 | `eslint-plugin-react-refresh` | Validates Fast Refresh compatibility in dev |
-| `shared` (workspace) | Mock locker/package data for customer retrieval UI |
 
 **Auth on the client:** JWT tokens from the API are stored in `sessionStorage` with expiry checks. Protected agent routes use a `ProtectedAgentRoute` guard.
 
@@ -74,6 +87,7 @@ smart-package-locker/
 | [Zod](https://zod.dev) | ^4.4 | Runtime schema validation for env, requests, and responses |
 | [fastify-type-provider-zod](https://github.com/turkerdev/fastify-type-provider-zod) | ^7.0 | Wires Zod schemas into Fastify route validation and serialization |
 | [tsc-alias](https://github.com/justkey007/tsc-alias) | ^1.8 | Resolves `@/` path aliases in compiled `dist/` output |
+| [Resend](https://resend.com) | ^6.16 | Transactional email for pickup details |
 
 **Fastify plugins**
 
@@ -93,9 +107,9 @@ smart-package-locker/
 
 | Export | Used by |
 | --- | --- |
-| `mockAgents` | API seed script, web flow state |
-| `mockLockers` | API seed script, web locker station UI |
-| `createMockPackages()` | API seed script, web customer retrieval lookup |
+| `mockAgents` | API seed script |
+| `mockLockers` | API seed script |
+| `createMockPackages()` | API seed script |
 
 Consumed as raw TypeScript via Bun workspace exports — no separate build step.
 
@@ -119,7 +133,7 @@ Consumed as raw TypeScript via Bun workspace exports — no separate build step.
    cp apps/web/.env.example apps/web/.env
    ```
 
-   Update `apps/api/.env` with your MongoDB URI and a strong `JWT_SECRET`.
+   Update `apps/api/.env` with your MongoDB URI and a strong `JWT_SECRET`. To enable the agent email feature on the success screen, also set `RESEND_API_KEY` and `RESEND_FROM_EMAIL` (see `apps/api/.env.example`).
 
 3. Start both apps:
 
@@ -144,6 +158,7 @@ Turborepo runs these across all workspace packages:
 | `bun run build` | Type-check and build all packages (`tsc` + `tsc-alias` for API, `vite build` for web) |
 | `bun run lint` | ESLint across all packages |
 | `bun run typecheck` | `tsc --noEmit` across all packages |
+| `bun run test` | Run tests across all packages (API uses `bun test`; see `apps/api` for `test:coverage`) |
 
 Run a single app from its directory:
 
@@ -160,6 +175,8 @@ cd apps/web && bun run dev
 2. Select a package size (`small`, `medium`, or `large`).
 3. Review the API-recommended locker and confirm drop-off.
 4. Receive a pickup code on the success screen.
+5. Optionally email pickup details to the customer (`POST /agent/dropoff/email`).
+6. Optionally adjust the drop-off timestamp for storage-charge demos (`POST /agent/dropoff/dropped-off-at`).
 
 The agent flow calls `POST /auth/agent/login` for a JWT, then `GET /agent/dropoff/lockers` and `POST /agent/dropoff`. Drop-offs are persisted to MongoDB with atomic locker reservation.
 
@@ -185,9 +202,13 @@ The customer flow calls `POST /customer/retrieval/lookup` to validate the locker
 │  apps/web   │ ──────────────────► │  apps/api   │ ──────────────► │ Database │
 │ React/Vite  │                     │   Fastify   │                 │          │
 └─────────────┘                     └─────────────┘                 └──────────┘
-       │                                   │
-       └──────── shared (seed data) ───────┘
+                                            │
+                                            └── shared (seed data)
 ```
+
+## Deployment
+
+Production is live at [https://locker.wanaqim.dev/](https://locker.wanaqim.dev/). Deployments are managed via Vercel and tracked in GitHub **Preview** and **Production** environments (see badges above). For local development, use `bun run dev` to run both the web app and API together.
 
 ## Further reading
 

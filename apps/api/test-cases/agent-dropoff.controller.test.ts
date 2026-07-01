@@ -1,5 +1,3 @@
-const mockGenerateUniquePickupCode = mock(() => Promise.resolve("123456"));
-
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ObjectId } from "mongodb";
@@ -42,14 +40,6 @@ describe("agent-dropoff controller", () => {
 
   beforeEach(() => {
     setupModelMocks();
-    mockGenerateUniquePickupCode.mockReset();
-    mockGenerateUniquePickupCode.mockImplementation(() =>
-      Promise.resolve("123456"),
-    );
-
-    mock.module("../src/utils/pickup-code.util.ts", () => ({
-      generateUniquePickupCode: mockGenerateUniquePickupCode,
-    }));
 
     mock.module("../src/utils/locker.util.ts", () => ({
       getSmallestAvailableLocker: lockerUtil.getSmallestAvailableLocker,
@@ -131,7 +121,6 @@ describe("agent-dropoff controller", () => {
         mockReply as FastifyReply,
       );
 
-      expect(mockGenerateUniquePickupCode).toHaveBeenCalled();
       expect(mockedPackagesCollection.insertOne).toHaveBeenCalled();
       expect(mockReply.status).toHaveBeenCalledWith(201);
       expect(mockReply.send).toHaveBeenCalledTimes(1);
@@ -142,9 +131,9 @@ describe("agent-dropoff controller", () => {
         agentId: "agent-001",
         lockerId: "L001",
         packageSize: PACKAGE_SIZE.SMALL,
-        pickupCode: "123456",
         status: PACKAGE_STATUS.STORED,
       });
+      expect(response.package.pickupCode).toMatch(/^\d{6}$/);
       expect(response.locker).toMatchObject({
         lockerId: "L001",
         status: LOCKER_STATUS.OCCUPIED,

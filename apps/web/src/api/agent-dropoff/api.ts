@@ -23,6 +23,24 @@ export type ConfirmAgentDropoffResponse = {
   locker: Locker;
 };
 
+export type SendEmailInput = {
+  packageId: string;
+  customerEmail: string;
+};
+
+export type SendEmailResponse = {
+  package: PackageRecord;
+};
+
+export type UpdateAgentDropoffTimeInput = {
+  packageId: string;
+  droppedOffAt: string;
+};
+
+export type UpdateAgentDropoffTimeResponse = {
+  package: PackageRecord;
+};
+
 export class AgentDropoffApiError extends Error {
   readonly code?: string;
   readonly statusCode: number;
@@ -60,6 +78,16 @@ function toAgentDropoffErrorMessage(
       return "That locker is no longer available. Please refresh and try again.";
     case "LOCKER_SIZE_MISMATCH":
       return "The recommended locker no longer matches this package size.";
+    case "PACKAGE_NOT_FOUND":
+      return "This package could not be found. Please restart the drop-off flow.";
+    case "PACKAGE_ALREADY_RETRIEVED":
+      return "This package was already retrieved and cannot be updated.";
+    case "CUSTOMER_EMAIL_ALREADY_SENT":
+      return "Pickup details were already emailed for this package.";
+    case "CUSTOMER_EMAIL_NOT_CONFIGURED":
+      return "Customer email sending is not configured on the server yet.";
+    case "CUSTOMER_EMAIL_SEND_FAILED":
+      return "We couldn't send the email right now. Please try again.";
     case "INVALID_REQUEST":
       return "The drop-off request was invalid. Please try again.";
     default:
@@ -161,4 +189,78 @@ export async function confirmAgentDropoff(
   }
 
   return payload as ConfirmAgentDropoffResponse;
+}
+
+export async function sendEmail(
+  input: SendEmailInput,
+  token: string,
+): Promise<SendEmailResponse> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}/agent/dropoff/email`, {
+      method: "POST",
+      headers: getAuthHeaders(token),
+      body: JSON.stringify(input),
+    });
+  } catch {
+    throw new AgentDropoffApiError(
+      "Unable to reach the server. Please try again.",
+      {
+        code: "NETWORK_ERROR",
+        statusCode: 0,
+      },
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as
+    | SendEmailResponse
+    | AgentDropoffErrorResponse
+    | null;
+
+  if (!response.ok) {
+    throw toAgentDropoffApiError(
+      payload as AgentDropoffErrorResponse | null,
+      response.status,
+    );
+  }
+
+  return payload as SendEmailResponse;
+}
+
+export async function updateAgentDropoffTime(
+  input: UpdateAgentDropoffTimeInput,
+  token: string,
+): Promise<UpdateAgentDropoffTimeResponse> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}/agent/dropoff/dropped-off-at`, {
+      method: "POST",
+      headers: getAuthHeaders(token),
+      body: JSON.stringify(input),
+    });
+  } catch {
+    throw new AgentDropoffApiError(
+      "Unable to reach the server. Please try again.",
+      {
+        code: "NETWORK_ERROR",
+        statusCode: 0,
+      },
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as
+    | UpdateAgentDropoffTimeResponse
+    | AgentDropoffErrorResponse
+    | null;
+
+  if (!response.ok) {
+    throw toAgentDropoffApiError(
+      payload as AgentDropoffErrorResponse | null,
+      response.status,
+    );
+  }
+
+  return payload as UpdateAgentDropoffTimeResponse;
 }

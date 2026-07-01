@@ -11,9 +11,17 @@ export const confirmAgentDropoffRequestSchema = z.object({
   lockerId: z.string().trim().min(1, "Locker ID is required."),
 });
 
+export const updateAgentDropoffTimeRequestSchema = z.object({
+  packageId: z.string().trim().min(1, "Package ID is required."),
+  droppedOffAt: z.string().datetime(),
+});
+
 export type AgentDropoffLockersQuery = z.infer<
   typeof agentDropoffLockersQuerySchema
 >;
 export type ConfirmAgentDropoffRequest = z.infer<
   typeof confirmAgentDropoffRequestSchema
+>;
+export type UpdateAgentDropoffTimeRequest = z.infer<
+  typeof updateAgentDropoffTimeRequestSchema
 >;

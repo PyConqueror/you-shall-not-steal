@@ -1,13 +1,31 @@
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import {
+  AgentDropoffApiError,
+  sendEmail,
+  updateAgentDropoffTime,
+} from "../api/agent-dropoff/api";
 import { DropOffSuccessStep } from "../api/agent-dropoff/DropOffSuccessStep";
-import { clearAgentSession } from "../api/agent-auth/session";
+import { clearAgentSession, getAgentSession } from "../api/agent-auth/session";
 import { useFlowState } from "../state/useFlowState";
 
 export function AgentSuccessPage() {
   const navigate = useNavigate();
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [sendEmailErrorMessage, setSendEmailErrorMessage] = useState<string | null>(
+    null,
+  );
+  const [sendEmailSuccessMessage, setSendEmailSuccessMessage] = useState<string | null>(
+    null,
+  );
+  const [isUpdatingDropOffTime, setIsUpdatingDropOffTime] = useState(false);
+  const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(
+    null,
+  );
   const {
     latestDropOffPackage,
     selectedPackageSize,
+    recordAgentDropOff,
     updateLatestDropOffTime,
     resetAgentFlow,
     resetFlowProgress,
@@ -34,12 +52,116 @@ export function AgentSuccessPage() {
     navigate("/");
   };
 
+  const handleUnauthorized = () => {
+    clearAgentSession();
+    navigate("/agent/id", { replace: true });
+  };
+
+  const clearSendEmailFeedback = () => {
+    setSendEmailErrorMessage(null);
+    setSendEmailSuccessMessage(null);
+  };
+
+  const handleSendEmail = async (customerEmail: string) => {
+    if (!latestDropOffPackage || latestDropOffPackage.customerEmail) {
+      return;
+    }
+
+    const session = getAgentSession();
+
+    if (!session) {
+      handleUnauthorized();
+      return;
+    }
+
+    setIsSendingEmail(true);
+    clearSendEmailFeedback();
+
+    try {
+      const response = await sendEmail(
+        {
+          packageId: latestDropOffPackage.packageId,
+          customerEmail,
+        },
+        session.token,
+      );
+      recordAgentDropOff(response.package);
+      setSendEmailSuccessMessage(`Pickup details sent to ${customerEmail}.`);
+    } catch (error) {
+      if (
+        error instanceof AgentDropoffApiError &&
+        error.statusCode === 401
+      ) {
+        handleUnauthorized();
+        return;
+      }
+
+      setSendEmailErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to email the customer right now. Please try again.",
+      );
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
+  const handleUpdateDropOffTime = async (newTime: string) => {
+    if (!latestDropOffPackage) {
+      return;
+    }
+
+    const session = getAgentSession();
+
+    if (!session) {
+      handleUnauthorized();
+      return;
+    }
+
+    setIsUpdatingDropOffTime(true);
+    setUpdateErrorMessage(null);
+
+    try {
+      const response = await updateAgentDropoffTime(
+        {
+          packageId: latestDropOffPackage.packageId,
+          droppedOffAt: newTime,
+        },
+        session.token,
+      );
+      updateLatestDropOffTime(response.package.droppedOffAt);
+    } catch (error) {
+      if (
+        error instanceof AgentDropoffApiError &&
+        error.statusCode === 401
+      ) {
+        handleUnauthorized();
+        return;
+      }
+
+      setUpdateErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to update the drop-off time right now. Please try again.",
+      );
+    } finally {
+      setIsUpdatingDropOffTime(false);
+    }
+  };
+
   return (
     <DropOffSuccessStep
       packageRecord={latestDropOffPackage}
       onDropAnother={handleDropAnother}
       onGoHome={handleGoHome}
-      onUpdateDropOffTime={updateLatestDropOffTime}
+      onSendEmail={handleSendEmail}
+      onClearSendEmailFeedback={clearSendEmailFeedback}
+      isSendingEmail={isSendingEmail}
+      sendEmailErrorMessage={sendEmailErrorMessage}
+      sendEmailSuccessMessage={sendEmailSuccessMessage}
+      onUpdateDropOffTime={handleUpdateDropOffTime}
+      isUpdatingDropOffTime={isUpdatingDropOffTime}
+      updateErrorMessage={updateErrorMessage}
     />
   );
 }

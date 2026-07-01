@@ -18,6 +18,7 @@ export const storedPackageRecordSchema = z.object({
   lockerId: z.string(),
   packageSize: z.enum(packageSizeValues),
   pickupCode: z.string(),
+  customerEmail: z.string().email().nullable(),
   status: z.enum(packageStatusValues),
   droppedOffAt: z.string().datetime(),
   retrievedAt: z.string().datetime().nullable().optional(),
@@ -35,6 +36,10 @@ export const confirmAgentDropoffResponseSchema = z.object({
   locker: publicLockerSchema,
 });
 
+export const updateAgentDropoffTimeResponseSchema = z.object({
+  package: storedPackageRecordSchema,
+});
+
 export type PublicLockerResponse = z.infer<typeof publicLockerSchema>;
 export type StoredPackageRecordResponse = z.infer<typeof storedPackageRecordSchema>;
 export type AgentDropoffLockersResponse = z.infer<
@@ -42,4 +47,7 @@ export type AgentDropoffLockersResponse = z.infer<
 >;
 export type ConfirmAgentDropoffResponse = z.infer<
   typeof confirmAgentDropoffResponseSchema
+>;
+export type UpdateAgentDropoffTimeResponse = z.infer<
+  typeof updateAgentDropoffTimeResponseSchema
 >;

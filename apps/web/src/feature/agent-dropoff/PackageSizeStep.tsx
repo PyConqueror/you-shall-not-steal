@@ -1,7 +1,7 @@
-import type { PackageSize } from "../../types";
-import { Card } from "../../components/Card";
-import { Button } from "../../components/Button";
-import { StepHeader } from "../../components/StepHeader";
+import type { PackageSize } from "@/types";
+import { Card } from "@/components/Card";
+import { Button } from "@/components/Button";
+import { StepHeader } from "@/components/StepHeader";
 
 interface PackageSizeStepProps {
   selectedSize: PackageSize | null;

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  lookupCustomerRetrieval,
-  type CustomerRetrievalCredentials,
-} from "../api/customer-retrieval/api";
-import { RetrievalFormStep } from "../api/customer-retrieval/RetrievalFormStep";
-import { clearAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+import { lookupCustomerRetrieval } from "@/lib/api/customer-retrieval/api";
+import type { CustomerRetrievalCredentials } from "@/types";
+import { RetrievalFormStep } from "@/feature/customer-retrieval/RetrievalFormStep";
+import { getErrorMessage } from "@/lib/errors/get-error-message";
+import { clearAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function CustomerRetrievalFormPage() {
   const navigate = useNavigate();
@@ -31,9 +30,10 @@ export function CustomerRetrievalFormPage() {
       navigate("/customer/confirm");
     } catch (lookupError) {
       setErrorMessage(
-        lookupError instanceof Error
-          ? lookupError.message
-          : "Unable to find the package right now. Please try again.",
+        getErrorMessage(
+          lookupError,
+          "Unable to find the package right now. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);

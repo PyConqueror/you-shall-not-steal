@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
-  AgentDropoffApiError,
   sendEmail,
   updateAgentDropoffTime,
-} from "../api/agent-dropoff/api";
-import { DropOffSuccessStep } from "../api/agent-dropoff/DropOffSuccessStep";
-import { clearAgentSession, getAgentSession } from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
+} from "@/lib/api/agent-dropoff/api";
+import {
+  getErrorMessage,
+  isUnauthorizedApiError,
+} from "@/lib/errors/get-error-message";
+import { DropOffSuccessStep } from "@/feature/agent-dropoff/DropOffSuccessStep";
+import { clearAgentSession, getAgentSession } from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
 
 export function AgentSuccessPage() {
   const navigate = useNavigate();
@@ -88,18 +91,16 @@ export function AgentSuccessPage() {
       recordAgentDropOff(response.package);
       setSendEmailSuccessMessage(`Pickup details sent to ${customerEmail}.`);
     } catch (error) {
-      if (
-        error instanceof AgentDropoffApiError &&
-        error.statusCode === 401
-      ) {
+      if (isUnauthorizedApiError(error)) {
         handleUnauthorized();
         return;
       }
 
       setSendEmailErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to email the customer right now. Please try again.",
+        getErrorMessage(
+          error,
+          "Unable to email the customer right now. Please try again.",
+        ),
       );
     } finally {
       setIsSendingEmail(false);
@@ -131,18 +132,16 @@ export function AgentSuccessPage() {
       );
       updateLatestDropOffTime(response.package.droppedOffAt);
     } catch (error) {
-      if (
-        error instanceof AgentDropoffApiError &&
-        error.statusCode === 401
-      ) {
+      if (isUnauthorizedApiError(error)) {
         handleUnauthorized();
         return;
       }
 
       setUpdateErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to update the drop-off time right now. Please try again.",
+        getErrorMessage(
+          error,
+          "Unable to update the drop-off time right now. Please try again.",
+        ),
       );
     } finally {
       setIsUpdatingDropOffTime(false);

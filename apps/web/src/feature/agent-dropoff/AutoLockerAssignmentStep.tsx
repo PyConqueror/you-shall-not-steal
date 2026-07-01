@@ -1,8 +1,8 @@
-import type { Locker, PackageSize } from "../../types";
-import { Button } from "../../components/Button";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { StepHeader } from "../../components/StepHeader";
-import { LockerStation } from "../locker-station/LockerStation";
+import type { Locker, PackageSize } from "@/types";
+import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
+import { LockerStation } from "@/feature/locker-station/LockerStation";
 
 interface AutoLockerAssignmentStepProps {
   lockers: Locker[];

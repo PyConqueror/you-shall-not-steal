@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import type { PackageRecord } from "../../types";
-import { Button } from "../../components/Button";
-import { Card } from "../../components/Card";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { SuccessPanel } from "../../components/SuccessPanel";
+import type { PackageRecord } from "@/types";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { SuccessPanel } from "@/components/SuccessPanel";
 
 const DROP_OFF_TIME_OFFSETS = [1, 6, 11] as const;
 type DropOffTimeOffset = (typeof DROP_OFF_TIME_OFFSETS)[number];

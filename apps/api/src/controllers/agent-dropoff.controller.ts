@@ -2,11 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ObjectId } from "mongodb";
 import { AppError } from "@/errors/app-error";
-import {
-  getAgentsCollection,
-  getLockersCollection,
-  getPackagesCollection,
-} from "@/models";
+import { getLockersCollection, getPackagesCollection } from "@/models";
 import type {
   AgentDropoffLockersQuery,
   AgentDropoffLockersResponse,
@@ -21,6 +17,7 @@ import {
   toPublicLocker,
   toStoredPackageRecord,
 } from "@/utils/agent-dropoff.util";
+import { resolveAuthenticatedAgent } from "@/utils/auth.util";
 import { canPackageFitLocker, getSmallestAvailableLocker } from "@/utils/locker.util";
 import { generateUniquePickupCode } from "@/utils/pickup-code.util";
 
@@ -50,21 +47,9 @@ export async function dropOffPackage(
   reply: FastifyReply,
 ) {
   const db = request.server.mongo.db;
-  const agentsCollection = getAgentsCollection(db);
+  const agent = await resolveAuthenticatedAgent(db, request.user.sub);
   const lockersCollection = getLockersCollection(db);
   const packagesCollection = getPackagesCollection(db);
-
-  const agent = await agentsCollection.findOne({
-    agentId: request.user.sub,
-  });
-
-  if (!agent) {
-    throw new AppError({
-      code: "AUTHENTICATED_AGENT_NOT_FOUND",
-      message: "Authenticated agent could not be resolved.",
-      statusCode: 401,
-    });
-  }
 
   const lockers = await lockersCollection.find({}, { sort: { lockerId: 1 } }).toArray();
   const recommendedLocker = getSmallestAvailableLocker(
@@ -170,21 +155,9 @@ export async function updateAgentDropoffTime(
   reply: FastifyReply,
 ) {
   const db = request.server.mongo.db;
-  const agentsCollection = getAgentsCollection(db);
+  const agent = await resolveAuthenticatedAgent(db, request.user.sub);
   const lockersCollection = getLockersCollection(db);
   const packagesCollection = getPackagesCollection(db);
-
-  const agent = await agentsCollection.findOne({
-    agentId: request.user.sub,
-  });
-
-  if (!agent) {
-    throw new AppError({
-      code: "AUTHENTICATED_AGENT_NOT_FOUND",
-      message: "Authenticated agent could not be resolved.",
-      statusCode: 401,
-    });
-  }
 
   const updatedPackage = await packagesCollection.findOneAndUpdate(
     {

@@ -1,16 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "@/errors/app-error";
-import {
-  getAgentsCollection,
-  getLockersCollection,
-  getPackagesCollection,
-} from "@/models";
+import { getLockersCollection, getPackagesCollection } from "@/models";
 import type {
   SendEmailRequest,
   SendEmailResponse,
 } from "@/schemas/email";
 import { PACKAGE_STATUS } from "@/types/enum";
 import { toStoredPackageRecord } from "@/utils/agent-dropoff.util";
+import { resolveAuthenticatedAgent } from "@/utils/auth.util";
 import { sendPickupDetailsEmail } from "@/utils/email.util";
 
 export async function sendEmail(
@@ -18,21 +15,9 @@ export async function sendEmail(
   reply: FastifyReply,
 ) {
   const db = request.server.mongo.db;
-  const agentsCollection = getAgentsCollection(db);
+  const agent = await resolveAuthenticatedAgent(db, request.user.sub);
   const lockersCollection = getLockersCollection(db);
   const packagesCollection = getPackagesCollection(db);
-
-  const agent = await agentsCollection.findOne({
-    agentId: request.user.sub,
-  });
-
-  if (!agent) {
-    throw new AppError({
-      code: "AUTHENTICATED_AGENT_NOT_FOUND",
-      message: "Authenticated agent could not be resolved.",
-      statusCode: 401,
-    });
-  }
 
   const customerEmail = request.body.customerEmail.trim();
   const existingPackage = await packagesCollection.findOne({

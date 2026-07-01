@@ -1,7 +1,7 @@
-import type { Locker, PackageSize } from "../../types";
-import { getLockerDisplayReason } from "../../utils/lockerRules";
-import { LockerCard } from "./LockerCard";
-import { LockerLegend } from "./LockerLegend";
+import type { Locker, PackageSize } from "@/types";
+import { getLockerDisplayReason } from "@/utils/lockerRules";
+import { LockerCard } from "@/feature/locker-station/LockerCard";
+import { LockerLegend } from "@/feature/locker-station/LockerLegend";
 
 interface LockerStationProps {
   lockers: Locker[];

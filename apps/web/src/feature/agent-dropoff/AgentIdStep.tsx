@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "../../components/Button";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { StepHeader } from "../../components/StepHeader";
+import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
+import { getErrorMessage } from "@/lib/errors/get-error-message";
 
 interface AgentIdStepProps {
   onNext: (agentId: string) => Promise<void>;
@@ -29,9 +30,10 @@ export function AgentIdStep({ onNext, onCancel }: AgentIdStepProps) {
       setError(null);
     } catch (submitError) {
       setError(
-        submitError instanceof Error
-          ? submitError.message
-          : "Unable to log in right now. Please try again.",
+        getErrorMessage(
+          submitError,
+          "Unable to log in right now. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);

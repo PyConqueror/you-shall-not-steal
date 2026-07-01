@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { AutoLockerAssignmentStep } from "../api/agent-dropoff/AutoLockerAssignmentStep";
+import { AutoLockerAssignmentStep } from "@/feature/agent-dropoff/AutoLockerAssignmentStep";
 import {
-  AgentDropoffApiError,
   confirmAgentDropoff,
   getAgentDropoffLockers,
-} from "../api/agent-dropoff/api";
+} from "@/lib/api/agent-dropoff/api";
+import { ApiError } from "@/lib/api/errors";
+import {
+  getErrorMessage,
+  isUnauthorizedApiError,
+} from "@/lib/errors/get-error-message";
 import {
   clearAgentSession,
   getAgentSession,
-} from "../api/agent-auth/session";
-import { useFlowState } from "../state/useFlowState";
-import type { Locker } from "../types";
+} from "@/feature/agent-auth/session";
+import { useFlowState } from "@/state/useFlowState";
+import type { Locker } from "@/types";
 
 export function AgentLockerAssignmentPage() {
   const navigate = useNavigate();
@@ -57,10 +61,7 @@ export function AgentLockerAssignmentPage() {
       setLockers(response.lockers);
       setRecommendedLocker(response.recommendedLocker);
     } catch (error) {
-      if (
-        error instanceof AgentDropoffApiError &&
-        error.statusCode === 401
-      ) {
+      if (isUnauthorizedApiError(error)) {
         handleUnauthorized();
         return;
       }
@@ -68,9 +69,10 @@ export function AgentLockerAssignmentPage() {
       setLockers([]);
       setRecommendedLocker(null);
       setLoadErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to load lockers right now. Please try again.",
+        getErrorMessage(
+          error,
+          "Unable to load lockers right now. Please try again.",
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -108,22 +110,20 @@ export function AgentLockerAssignmentPage() {
       recordAgentDropOff(response.package);
       navigate("/agent/success");
     } catch (error) {
-      if (
-        error instanceof AgentDropoffApiError &&
-        error.statusCode === 401
-      ) {
+      if (isUnauthorizedApiError(error)) {
         handleUnauthorized();
         return;
       }
 
       setConfirmErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to complete the drop-off right now. Please try again.",
+        getErrorMessage(
+          error,
+          "Unable to complete the drop-off right now. Please try again.",
+        ),
       );
 
       if (
-        error instanceof AgentDropoffApiError &&
+        error instanceof ApiError &&
         (error.code === "LOCKER_NOT_FOUND" ||
           error.code === "NO_SUITABLE_LOCKER" ||
           error.code === "LOCKER_RECOMMENDATION_CHANGED" ||

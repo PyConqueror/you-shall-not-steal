@@ -1,13 +1,4 @@
-export type StorageChargeBreakdown = {
-  chargeableDays: number;
-  firstTierDays: number;
-  secondTierDays: number;
-  thirdTierDays: number;
-  firstTierAmount: number;
-  secondTierAmount: number;
-  thirdTierAmount: number;
-  totalAmount: number;
-};
+import type { StorageChargeBreakdown } from "@/types";
 
 export const BASE_DAILY_RATE = 2;
 

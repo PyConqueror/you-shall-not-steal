@@ -6,12 +6,13 @@ import {
 } from "react";
 import type {
   Agent,
+  FlowStateContextValue,
   PackageRecord,
   PackageSize,
   StorageChargePreview,
 } from "@/types";
 import { getAgentSession } from "@/feature/agent-auth/session";
-import { FlowStateContext, type FlowStateContextValue } from "@/state/flowState";
+import { FlowStateContext } from "@/state/flowState";
 
 type FlowStateProviderProps = {
   children: ReactNode;

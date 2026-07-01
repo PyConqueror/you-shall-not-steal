@@ -1,4 +1,5 @@
-import { createApiError, type ApiErrorResponse } from "@/lib/api/errors";
+import { createApiError } from "@/lib/api/errors";
+import type { ApiErrorResponse } from "@/types";
 
 export function mapAgentAuthError(
   payload: ApiErrorResponse | null,

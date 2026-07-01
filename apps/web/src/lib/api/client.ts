@@ -1,8 +1,5 @@
-import {
-  ApiError,
-  type ApiErrorResponse,
-  createApiError,
-} from "@/lib/api/errors";
+import { ApiError } from "@/lib/api/errors";
+import type { ApiErrorResponse } from "@/types";
 
 const NETWORK_ERROR_MESSAGE = "Unable to reach the server. Please try again.";
 

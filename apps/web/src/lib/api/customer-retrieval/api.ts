@@ -1,23 +1,11 @@
-import type { Locker, PackageRecord, StorageChargePreview } from "@/types";
+import type {
+  ConfirmCustomerRetrievalResponse,
+  CustomerRetrievalCredentials,
+  CustomerRetrievalLookupResponse,
+} from "@/types";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { requestJson } from "@/lib/api/client";
 import { mapCustomerRetrievalError } from "@/lib/api/customer-retrieval/messages";
-
-export type CustomerRetrievalCredentials = {
-  lockerId: string;
-  pickupCode: string;
-};
-
-export type CustomerRetrievalLookupResponse = {
-  package: PackageRecord;
-  locker: Locker;
-  chargePreview: StorageChargePreview;
-};
-
-export type ConfirmCustomerRetrievalResponse = {
-  package: PackageRecord;
-  locker: Locker;
-};
 
 export async function lookupCustomerRetrieval(
   input: CustomerRetrievalCredentials,

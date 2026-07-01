@@ -1,40 +1,16 @@
-import type { Locker, PackageRecord, PackageSize } from "@/types";
+import type {
+  AgentDropoffLockersResponse,
+  ConfirmAgentDropoffInput,
+  ConfirmAgentDropoffResponse,
+  PackageSize,
+  SendEmailInput,
+  SendEmailResponse,
+  UpdateAgentDropoffTimeInput,
+  UpdateAgentDropoffTimeResponse,
+} from "@/types";
 import { mapAgentDropoffError } from "@/lib/api/agent-dropoff/messages";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { requestJson } from "@/lib/api/client";
-
-export type AgentDropoffLockersResponse = {
-  lockers: Locker[];
-  recommendedLocker: Locker | null;
-};
-
-export type ConfirmAgentDropoffInput = {
-  packageSize: PackageSize;
-  lockerId: string;
-};
-
-export type ConfirmAgentDropoffResponse = {
-  package: PackageRecord;
-  locker: Locker;
-};
-
-export type SendEmailInput = {
-  packageId: string;
-  customerEmail: string;
-};
-
-export type SendEmailResponse = {
-  package: PackageRecord;
-};
-
-export type UpdateAgentDropoffTimeInput = {
-  packageId: string;
-  droppedOffAt: string;
-};
-
-export type UpdateAgentDropoffTimeResponse = {
-  package: PackageRecord;
-};
 
 function getAuthHeaders(token: string) {
   return {

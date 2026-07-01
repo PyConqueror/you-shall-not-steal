@@ -1,9 +1,4 @@
-export type ApiErrorResponse = {
-  error?: {
-    code?: string;
-    message?: string;
-  };
-};
+import type { ApiErrorResponse } from "@/types";
 
 export class ApiError extends Error {
   readonly code?: string;

@@ -1,4 +1,4 @@
-import type { AgentSession } from "@/feature/agent-auth/session";
+import type { AgentSession } from "@/types";
 import { mapAgentAuthError } from "@/lib/api/agent-auth/messages";
 import { getApiBaseUrl } from "@/lib/api/base-url";
 import { requestJson } from "@/lib/api/client";

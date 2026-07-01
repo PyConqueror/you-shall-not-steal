@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  lookupCustomerRetrieval,
-  type CustomerRetrievalCredentials,
-} from "@/lib/api/customer-retrieval/api";
+import { lookupCustomerRetrieval } from "@/lib/api/customer-retrieval/api";
+import type { CustomerRetrievalCredentials } from "@/types";
 import { RetrievalFormStep } from "@/feature/customer-retrieval/RetrievalFormStep";
 import { getErrorMessage } from "@/lib/errors/get-error-message";
 import { clearAgentSession } from "@/feature/agent-auth/session";

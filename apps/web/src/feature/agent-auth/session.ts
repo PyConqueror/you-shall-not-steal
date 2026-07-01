@@ -1,12 +1,6 @@
-import type { Agent } from "@/types";
+import type { AgentSession } from "@/types";
 
 const AGENT_SESSION_KEY = "smart-locker-agent-session";
-
-export type AgentSession = {
-  token: string;
-  expiresAt: string;
-  agent: Agent;
-};
 
 function isBrowser() {
   return typeof window !== "undefined";

@@ -23,6 +23,15 @@ export type ConfirmAgentDropoffResponse = {
   locker: Locker;
 };
 
+export type SendEmailInput = {
+  packageId: string;
+  customerEmail: string;
+};
+
+export type SendEmailResponse = {
+  package: PackageRecord;
+};
+
 export type UpdateAgentDropoffTimeInput = {
   packageId: string;
   droppedOffAt: string;
@@ -73,6 +82,12 @@ function toAgentDropoffErrorMessage(
       return "This package could not be found. Please restart the drop-off flow.";
     case "PACKAGE_ALREADY_RETRIEVED":
       return "This package was already retrieved and cannot be updated.";
+    case "CUSTOMER_EMAIL_ALREADY_SENT":
+      return "Pickup details were already emailed for this package.";
+    case "CUSTOMER_EMAIL_NOT_CONFIGURED":
+      return "Customer email sending is not configured on the server yet.";
+    case "CUSTOMER_EMAIL_SEND_FAILED":
+      return "We couldn't send the email right now. Please try again.";
     case "INVALID_REQUEST":
       return "The drop-off request was invalid. Please try again.";
     default:
@@ -174,6 +189,43 @@ export async function confirmAgentDropoff(
   }
 
   return payload as ConfirmAgentDropoffResponse;
+}
+
+export async function sendEmail(
+  input: SendEmailInput,
+  token: string,
+): Promise<SendEmailResponse> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}/agent/dropoff/email`, {
+      method: "POST",
+      headers: getAuthHeaders(token),
+      body: JSON.stringify(input),
+    });
+  } catch {
+    throw new AgentDropoffApiError(
+      "Unable to reach the server. Please try again.",
+      {
+        code: "NETWORK_ERROR",
+        statusCode: 0,
+      },
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as
+    | SendEmailResponse
+    | AgentDropoffErrorResponse
+    | null;
+
+  if (!response.ok) {
+    throw toAgentDropoffApiError(
+      payload as AgentDropoffErrorResponse | null,
+      response.status,
+    );
+  }
+
+  return payload as SendEmailResponse;
 }
 
 export async function updateAgentDropoffTime(

@@ -28,6 +28,7 @@ export interface PackageEntity {
   lockerId: ObjectId
   packageSize: PackageSize
   pickupCode: string
+  customerEmail?: string | null
   status: PackageStatus
   droppedOffAt: string
   retrievedAt?: string | null

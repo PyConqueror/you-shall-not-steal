@@ -11,6 +11,7 @@ export const PackageModelFields = {
   lockerId: { type: ObjectId, ref: 'lockers', required: true },
   packageSize: { type: String, enum: PACKAGE_SIZE, required: true },
   pickupCode: { type: String, required: true },
+  customerEmail: { type: String, required: false },
   status: { type: String, enum: PACKAGE_STATUS, required: true },
   droppedOffAt: { type: String, required: true },
   retrievedAt: { type: String, required: false },

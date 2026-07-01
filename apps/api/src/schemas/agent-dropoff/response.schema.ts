@@ -18,6 +18,7 @@ export const storedPackageRecordSchema = z.object({
   lockerId: z.string(),
   packageSize: z.enum(packageSizeValues),
   pickupCode: z.string(),
+  customerEmail: z.string().email().nullable(),
   status: z.enum(packageStatusValues),
   droppedOffAt: z.string().datetime(),
   retrievedAt: z.string().datetime().nullable().optional(),

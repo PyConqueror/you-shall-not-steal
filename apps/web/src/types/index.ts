@@ -36,6 +36,7 @@ export type PackageRecord = {
   lockerId: string;
   packageSize: PackageSize;
   pickupCode: string;
+  customerEmail?: string | null;
   status: PackageStatus;
   droppedOffAt: string;
   retrievedAt?: string | null;

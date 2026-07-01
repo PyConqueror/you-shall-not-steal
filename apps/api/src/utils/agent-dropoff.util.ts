@@ -29,6 +29,7 @@ export function toStoredPackageRecord(
     lockerId: locker.lockerId,
     packageSize: packageRecord.packageSize,
     pickupCode: packageRecord.pickupCode,
+    customerEmail: packageRecord.customerEmail ?? null,
     status: packageRecord.status,
     droppedOffAt: packageRecord.droppedOffAt,
     retrievedAt: packageRecord.retrievedAt ?? null,
